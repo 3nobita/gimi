@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product - <%= shopName %> | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/product-edit.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div>
+                <h2>SHOPFLOW</h2>
+                <span>Business Suite</span>
+            </div>
+        </div>
+
+        <div class="shop-profile">
+            <div class="shop-avatar"><i class="fa-solid fa-store"></i></div>
+            <div class="shop-info">
+                <strong><%= shopName %></strong>
+                <span>Shop Owner</span>
+            </div>
+            <span class="online-dot"></span>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <a href="/shop/analytics" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+            </a>
+            <a href="/shop/billing" class="nav-link">
+                <i class="fa-solid fa-receipt"></i><span>Billing</span>
+            </a>
+            <a href="/shop/products" class="nav-link active">
+                <i class="fa-solid fa-box"></i><span>Products</span>
+            </a>
+            <a href="/shop/customers" class="nav-link">
+                <i class="fa-solid fa-users"></i><span>Customers</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="help-card">
+                <div class="help-icon"><i class="fa-solid fa-headset"></i></div>
+                <strong>Need help?</strong>
+                <p>We're here to support your business.</p>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <div class="breadcrumb">Products <span>/</span> Edit Product</div>
+                    <h1>Product Management</h1>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="date-display">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+                <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
+            </div>
+        </header>
+
+        <section class="page-content">
+
+            <!-- HEADING -->
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow"><span></span> INVENTORY MANAGEMENT</div>
+                    <h2>Edit Product</h2>
+                    <p>Update product information, inventory and pricing details.</p>
+                </div>
+
+                <a href="/shop/products" class="back-button">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Products
+                </a>
+            </div>
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                    <button type="button" class="alert-close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            <% } %>
+
+            <div class="product-layout">
+
+                <!-- EDIT FORM -->
+                <section class="form-card">
+
+                    <div class="card-heading">
+                        <div class="heading-icon">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div>
+                            <h3>Product Details</h3>
+                            <p>Update your product information below.</p>
+                        </div>
+                    </div>
+
+                    <form action="/shop/products/<%= product.product_id %>/edit"
+                        method="POST" id="productForm">
+
+                        <!-- BASIC INFORMATION -->
+                        <div class="form-section">
+                            <div class="section-heading">
+                                <span class="section-number">01</span>
+                                <div>
+                                    <h4>Basic Information</h4>
+                                    <p>Product identity and classification</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productName">Product Name <span>*</span></label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-box"></i>
+                                    <input type="text" id="productName"
+                                        name="product_name"
+                                        value="<%= product.product_name %>"
+                                        placeholder="Enter product name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="productCategory">Category</label>
+                                    <div class="input-wrap">
+                                        <i class="fa-solid fa-layer-group"></i>
+                                        <input type="text" id="productCategory"
+                                            name="product_category"
+                                            value="<%= product.product_category || '' %>"
+                                            placeholder="e.g. Clothing">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="productSize">Size</label>
+                                    <div class="input-wrap">
+                                        <i class="fa-solid fa-ruler"></i>
+                                        <input type="text" id="productSize"
+                                            name="product_size"
+                                            value="<%= product.product_size || '' %>"
+                                            placeholder="e.g. M, L, XL">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productColor">Color</label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-palette"></i>
+                                    <input type="text" id="productColor"
+                                        name="product_color"
+                                        value="<%= product.product_color || '' %>"
+                                        placeholder="Enter product color">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INVENTORY -->
+                        <div class="form-section">
+                            <div class="section-heading">
+                                <span class="section-number">02</span>
+                                <div>
+                                    <h4>Inventory Management</h4>
+                                    <p>Control available stock quantity</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productStock">Stock Quantity <span>*</span></label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-boxes-stacked"></i>
+                                    <input type="number" id="productStock"
+                                        name="product_stock"
+                                        value="<%= product.product_stock %>"
+                                        min="0" step="1" required>
+                                    <span class="input-suffix">Units</span>
+                                </div>
+                                <small class="field-hint">
+                                    Current stock available for sale.
+                                </small>
+                            </div>
+
+                            <div class="stock-health">
+                                <div class="stock-health-icon" id="stockIcon">
+                                    <i class="fa-solid fa-boxes-stacked"></i>
+                                </div>
+                                <div class="stock-health-info">
+                                    <strong id="stockLabel">Stock Status</strong>
+                                    <span id="stockDescription">Inventory information</span>
+                                </div>
+                                <span class="stock-indicator" id="stockIndicator"></span>
+                            </div>
+                        </div>
+
+                        <!-- PRICING -->
+                        <div class="form-section">
+                            <div class="section-heading">
+                                <span class="section-number">03</span>
+                                <div>
+                                    <h4>Pricing & Profit</h4>
+                                    <p>Manage product cost and selling price</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="actualPrice">Purchase Price <span>*</span></label>
+                                    <div class="input-wrap price-input">
+                                        <span class="currency">₹</span>
+                                        <input type="number" id="actualPrice"
+                                            name="product_actual_price"
+                                            value="<%= product.product_actual_price %>"
+                                            min="0" step="0.01" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="sellPrice">Selling Price <span>*</span></label>
+                                    <div class="input-wrap price-input">
+                                        <span class="currency">₹</span>
+                                        <input type="number" id="sellPrice"
+                                            name="product_sell_price"
+                                            value="<%= product.product_sell_price %>"
+                                            min="0" step="0.01" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profit-preview" id="profitPreview">
+                                <div class="profit-top">
+                                    <span><i class="fa-solid fa-chart-line"></i> PROFIT PREVIEW</span>
+                                    <span class="profit-tag" id="profitTag">Calculated Live</span>
+                                </div>
+
+                                <div class="profit-grid">
+                                    <div>
+                                        <small>Profit Per Unit</small>
+                                        <strong id="profitAmount">₹0.00</strong>
+                                    </div>
+                                    <div>
+                                        <small>Profit Margin</small>
+                                        <strong id="profitMargin">0%</strong>
+                                    </div>
+                                </div>
+
+                                <p id="profitMessage">
+                                    Update the prices to calculate your product profit.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- STATUS -->
+                        <div class="form-section">
+                            <div class="section-heading">
+                                <span class="section-number">04</span>
+                                <div>
+                                    <h4>Product Availability</h4>
+                                    <p>Manage visibility and selling status</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productStatus">Product Status</label>
+                                <div class="input-wrap select-wrap">
+                                    <i class="fa-solid fa-toggle-on"></i>
+                                    <select name="product_status" id="productStatus">
+                                        <option value="ACTIVE" <%= product.product_status === 'ACTIVE' ? 'selected' : '' %>>ACTIVE</option>
+                                        <option value="INACTIVE" <%= product.product_status === 'INACTIVE' ? 'selected' : '' %>>INACTIVE</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down select-arrow"></i>
+                                </div>
+                                <small class="field-hint">
+                                    Inactive products may not be available for billing.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- ACTIONS -->
+                        <div class="form-actions">
+                            <a href="/shop/products" class="cancel-button">Cancel</a>
+
+                            <button type="submit" class="submit-button" id="submitButton">
+                                <i class="fa-solid fa-check"></i>
+                                Update Product
+                            </button>
+                        </div>
+
+                    </form>
+                </section>
+
+                <!-- LIVE PREVIEW -->
+                <aside class="preview-column">
+
+                    <div class="preview-card">
+                        <div class="preview-header">
+                            <span>LIVE PRODUCT PREVIEW</span>
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+
+                        <div class="product-visual">
+                            <div class="product-visual-icon">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                            <span id="previewCategory"><%= product.product_category || 'Product Category' %></span>
+                        </div>
+
+                        <div class="preview-product-info">
+                            <h3 id="previewName"><%= product.product_name %></h3>
+
+                            <div class="preview-attributes">
+                                <span id="previewSize">
+                                    <i class="fa-solid fa-ruler"></i>
+                                    <%= product.product_size || 'No size' %>
+                                </span>
+                                <span id="previewColor">
+                                    <i class="fa-solid fa-palette"></i>
+                                    <%= product.product_color || 'No color' %>
+                                </span>
+                            </div>
+
+                            <div class="preview-price">
+                                <span>Selling Price</span>
+                                <strong id="previewSellPrice">₹<%= Number(product.product_sell_price || 0).toFixed(2) %></strong>
+                            </div>
+                        </div>
+
+                        <div class="preview-stock">
+                            <span>Available Stock</span>
+                            <strong id="previewStock"><%= product.product_stock %> Units</strong>
+                        </div>
+
+                        <div class="preview-status-row">
+                            <span>Availability</span>
+                            <span class="preview-status active" id="previewStatus">
+                                <span></span> <%= product.product_status %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- PRODUCT INSIGHT -->
+                    <div class="insight-card">
+                        <div class="insight-heading">
+                            <div class="insight-icon">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </div>
+                            <h4>Business Insight</h4>
+                        </div>
+
+                        <p>
+                            Keep your purchase and selling prices updated to understand
+                            your product profitability and make smarter pricing decisions.
+                        </p>
+                    </div>
+
+                    <div class="security-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Your product information is managed securely within your shop.</span>
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            <span>© <%= new Date().getFullYear() %> SHOPFLOW. All rights reserved.</span>
+            <span>Built for smarter business <i class="fa-solid fa-heart"></i></span>
+        </footer>
+
+    </main>
+</div>
+
+<script src="/js/product-edit.js"></script>
+</body>
+</html>

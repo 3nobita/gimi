@@ -1,0 +1,424 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10182b">
+
+  <title>Billing & Invoices | <%= shopName %></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/billing.css">
+
+  <script src="/js/billing.js" defer></script>
+</head>
+
+<body>
+
+<div class="dashboard-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+      <div class="brand-logo">N</div>
+      <div>
+        <h2>Nova<span>Business</span></h2>
+        <small>MANAGEMENT SUITE</small>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">×</button>
+    </div>
+
+    <div class="shop-profile">
+      <div class="shop-avatar"><%= shopName.charAt(0).toUpperCase() %></div>
+      <div class="shop-details">
+        <strong><%= shopName %></strong>
+        <small>Business Account</small>
+      </div>
+      <span class="online-dot"></span>
+    </div>
+
+    <div class="nav-label">WORKSPACE</div>
+
+    <nav class="sidebar-nav">
+
+      <a href="/shop/analytics" class="nav-link">
+        <span class="nav-icon">▦</span>
+        Overview
+      </a>
+
+      <a href="/shop/billing" class="nav-link active">
+        <span class="nav-icon">▤</span>
+        Billing
+        <span class="active-indicator"></span>
+      </a>
+
+      <a href="/shop/products" class="nav-link">
+        <span class="nav-icon">◈</span>
+        Products
+      </a>
+
+      <a href="/shop/customers" class="nav-link">
+        <span class="nav-icon">♙</span>
+        Customers
+      </a>
+
+    </nav>
+
+    <div class="nav-label">MANAGEMENT</div>
+
+    <nav class="sidebar-nav">
+      <a href="/shop/analytics" class="nav-link">
+        <span class="nav-icon">◷</span>
+        Analytics
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <div class="upgrade-card">
+        <div class="upgrade-icon">✦</div>
+        <strong>Grow your business</strong>
+        <p>Manage every transaction and build a stronger business.</p>
+      </div>
+
+      <a href="/shop/logout" class="logout-link">
+        <span>↪</span> Sign out
+      </a>
+
+    </div>
+
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+
+        <div>
+          <div class="breadcrumb">Workspace / <span>Billing</span></div>
+          <div class="topbar-heading">Billing & Invoices</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="live-indicator">
+          <span></span> Business Account
+        </div>
+
+        <div class="topbar-avatar">
+          <%= shopName.charAt(0).toUpperCase() %>
+        </div>
+      </div>
+
+    </header>
+
+    <div class="page-content">
+
+      <!-- PAGE HEADING -->
+      <section class="page-heading">
+
+        <div>
+          <div class="eyebrow">
+            <span></span> TRANSACTION MANAGEMENT
+          </div>
+
+          <h1>Digital Bills<span>.</span></h1>
+
+          <p>Create invoices, track payments and manage your billing activity.</p>
+        </div>
+
+        <a href="/shop/billing/new" class="create-bill-btn">
+          <span class="plus-icon">+</span>
+          Create New Bill
+          <span class="arrow-icon">→</span>
+        </a>
+
+      </section>
+
+      <!-- NOTIFICATIONS -->
+      <% if (success) { %>
+        <div class="notification success-notification" role="status">
+          <span class="notification-icon">✓</span>
+          <div>
+            <strong>Success</strong>
+            <p><%= success %></p>
+          </div>
+          <button type="button" class="notification-close" aria-label="Dismiss notification">×</button>
+        </div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="notification error-notification" role="alert">
+          <span class="notification-icon">!</span>
+          <div>
+            <strong>Something went wrong</strong>
+            <p><%= error %></p>
+          </div>
+          <button type="button" class="notification-close" aria-label="Dismiss notification">×</button>
+        </div>
+      <% } %>
+
+      <!-- BILLING INTRO -->
+      <section class="billing-overview">
+
+        <div class="overview-icon">▤</div>
+
+        <div class="overview-content">
+          <span>YOUR BILLING WORKSPACE</span>
+          <h2>Every transaction, one place.</h2>
+          <p>Access your generated bills and customer invoices from one centralized workspace.</p>
+        </div>
+
+        <div class="overview-decoration">
+          <div class="decoration-circle circle-one"></div>
+          <div class="decoration-circle circle-two"></div>
+          <div class="decoration-circle circle-three"></div>
+        </div>
+
+      </section>
+
+      <!-- SEARCH -->
+      <section class="search-panel">
+
+        <div class="search-heading">
+          <div>
+            <h2>Find Transactions</h2>
+            <p>Search bills using invoice ID, customer name or mobile number.</p>
+          </div>
+          <span class="search-label">QUICK SEARCH</span>
+        </div>
+
+        <form action="/shop/billing" method="GET" class="search-form" id="billingSearchForm">
+
+          <div class="search-input-wrapper">
+
+            <span class="search-icon">⌕</span>
+
+            <input
+              type="text"
+              name="search"
+              id="billingSearch"
+              value="<%= query.search || '' %>"
+              placeholder="Search by Bill ID, Customer Name or Mobile..."
+              autocomplete="off"
+              aria-label="Search bills"
+            >
+
+            <button type="button" id="clearSearch" class="clear-search" aria-label="Clear search">
+              ×
+            </button>
+
+          </div>
+
+          <button type="submit" class="search-btn">
+            Search <span>→</span>
+          </button>
+
+          <a href="/shop/billing" class="reset-btn">
+            ↻ Reset
+          </a>
+
+        </form>
+
+        <% if (query.search) { %>
+          <div class="search-result-info">
+            Showing results for: <strong><%= query.search %></strong>
+          </div>
+        <% } %>
+
+      </section>
+
+      <!-- BILL TABLE -->
+      <section class="data-panel">
+
+        <div class="panel-heading">
+
+          <div>
+            <span class="panel-eyebrow">FINANCIAL RECORDS</span>
+            <h2>All Invoices</h2>
+            <p>Manage and review your generated customer bills.</p>
+          </div>
+
+          <div class="table-count">
+            <span class="count-dot"></span>
+            <%= bills.length %> RECORDS
+          </div>
+
+        </div>
+
+        <div class="table-toolbar">
+          <div class="table-info">
+            <span class="table-info-icon">▤</span>
+            Invoice Management
+          </div>
+
+          <div class="secure-label">
+            <span>✓</span> Secure Records
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>INVOICE ID</th>
+                <th>CUSTOMER DETAILS</th>
+                <th>MOBILE</th>
+                <th>SUBTOTAL</th>
+                <th>DISCOUNT</th>
+                <th>FINAL PAYABLE</th>
+                <th>PAYMENT STATUS</th>
+                <th>DATE</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <% if (bills.length === 0) { %>
+
+                <tr>
+                  <td colspan="9">
+                    <div class="empty-state">
+                      <div class="empty-icon">▤</div>
+                      <h3>No invoices found</h3>
+                      <p>Your billing records will appear here once you create your first bill.</p>
+                      <a href="/shop/billing/new" class="empty-action">
+                        Create Your First Bill →
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+
+              <% } else { %>
+
+                <% bills.forEach((b, index) => { %>
+
+                  <tr class="bill-row" style="--row-index: <%= index %>">
+
+                    <td>
+                      <div class="invoice-id">
+                        <span>#</span><%= b.bill_id %>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div class="customer-cell">
+                        <div class="customer-avatar">
+                          <%= (b.cust_name || 'W').charAt(0).toUpperCase() %>
+                        </div>
+
+                        <div class="customer-info">
+                          <strong><%= b.cust_name || 'Walk-in Customer' %></strong>
+                          <small>Customer</small>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <span class="mobile-number"><%= b.mobile || '-' %></span>
+                    </td>
+
+                    <td>
+                      <span class="subtotal-amount">
+                        ₹<%= Number(b.total_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="discount-amount">
+                        -₹<%= Number(b.discount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="final-amount">
+                        ₹<%= Number(b.final_amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <% if (String(b.payment_status || '').toUpperCase() === 'PAID') { %>
+
+                        <span class="status-badge paid">
+                          <span></span> Paid
+                        </span>
+
+                      <% } else { %>
+
+                        <span class="status-badge pending">
+                          <span></span>
+                          <%= b.payment_status || 'Pending' %>
+                        </span>
+
+                      <% } %>
+                    </td>
+
+                    <td>
+                      <span class="date-cell">
+                        <%= String(b.created_at || '').split('T')[0] || '-' %>
+                      </span>
+                    </td>
+
+                    <td>
+                      <a href="/shop/billing/<%= b.bill_id %>" class="view-invoice">
+                        <span>View</span>
+                        <span>↗</span>
+                      </a>
+                    </td>
+
+                  </tr>
+
+                <% }) %>
+
+              <% } %>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <!-- TABLE FOOTER -->
+        <div class="table-footer">
+
+          <div>
+            <span class="footer-status-dot"></span>
+            Billing records are securely managed.
+          </div>
+
+          <div class="footer-record-count">
+            <strong><%= bills.length %></strong> invoices displayed
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <span>© <%= new Date().getFullYear() %> Nova Business Suite</span>
+        <span>Designed for smarter business decisions.</span>
+      </footer>
+
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

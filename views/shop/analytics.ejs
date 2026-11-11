@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d1a">
+  <title><%= shopName %> | Business Analytics</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/analytics.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/js/analytics.js" defer></script>
+</head>
+
+<body>
+
+<div class="dashboard-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">N</div>
+      <div>
+        <h2>Nova<span>Business</span></h2>
+        <small>MANAGEMENT SUITE</small>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">×</button>
+    </div>
+
+    <div class="shop-profile">
+      <div class="shop-avatar"><%= shopName.charAt(0).toUpperCase() %></div>
+      <div class="shop-details">
+        <strong><%= shopName %></strong>
+        <small>Business Account</small>
+      </div>
+      <span class="online-dot"></span>
+    </div>
+
+    <div class="nav-label">WORKSPACE</div>
+
+    <nav class="sidebar-nav">
+      <a href="/shop/analytics" class="nav-link active">
+        <span class="nav-icon">▦</span> Overview
+        <span class="active-indicator"></span>
+      </a>
+
+      <a href="/shop/billing" class="nav-link">
+        <span class="nav-icon">▤</span> Billing
+      </a>
+
+      <a href="/shop/products" class="nav-link">
+        <span class="nav-icon">◈</span> Products
+      </a>
+
+      <a href="/shop/customers" class="nav-link">
+        <span class="nav-icon">♙</span> Customers
+      </a>
+    </nav>
+
+    <div class="nav-label">MANAGEMENT</div>
+
+    <nav class="sidebar-nav">
+      <a href="/shop/profile" class="nav-link">
+        <span class="nav-icon">◷</span> Shop Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="upgrade-card">
+        <div class="upgrade-icon">✦</div>
+        <strong>Grow your business</strong>
+        <p>Make smarter decisions with your business insights.</p>
+      </div>
+
+      <a href="/shop/logout" class="logout-link">
+        <span>↪</span> Sign out
+      </a>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+        <div>
+          <div class="breadcrumb">Workspace / <span>Analytics</span></div>
+          <div class="topbar-heading">Business Intelligence</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="live-indicator"><span></span> Live Dashboard</div>
+        <div class="topbar-avatar"><%= shopName.charAt(0).toUpperCase() %></div>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- Heading -->
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow"><span></span> BUSINESS PERFORMANCE</div>
+          <h1>Business Overview<span>.</span></h1>
+          <p>Track your revenue, understand your customers and grow smarter.</p>
+        </div>
+
+        <form method="GET" action="/shop/analytics" class="filter-form">
+          <div class="filter-select-wrap">
+            <span>◷</span>
+            <select name="filter" id="filter" onchange="toggleCustom(this.value)">
+              <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
+              <option value="yesterday" <%= filter === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
+              <option value="7days" <%= filter === '7days' ? 'selected' : '' %>>Last 7 Days</option>
+              <option value="30days" <%= filter === '30days' ? 'selected' : '' %>>Last 30 Days</option>
+              <option value="month" <%= filter === 'month' ? 'selected' : '' %>>This Month</option>
+              <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom Range</option>
+            </select>
+          </div>
+
+          <div id="customDates" class="custom-dates <%= filter === 'custom' ? 'show' : '' %>">
+            <input type="date" name="startDate" value="<%= startDate %>">
+            <input type="date" name="endDate" value="<%= endDate %>">
+          </div>
+
+          <input type="hidden" name="page" value="1">
+          <button type="submit" class="apply-btn">Apply Filter <span>→</span></button>
+        </form>
+      </section>
+
+      <!-- KPI Cards -->
+      <section class="section-block">
+        <div class="section-heading">
+          <div>
+            <h2>Financial Overview</h2>
+            <p>Your business performance at a glance</p>
+          </div>
+          <span class="section-period">SELECTED PERIOD</span>
+        </div>
+
+        <div class="stats-grid">
+
+          <article class="stat-card revenue-card">
+            <div class="stat-top">
+              <span class="stat-icon revenue-icon">₹</span>
+              <span class="stat-tag">REVENUE</span>
+            </div>
+            <p>Total Sales</p>
+            <h3>₹<%= Number(overview.total_sales || 0).toLocaleString('en-IN') %></h3>
+            <div class="stat-footer"><span>▤</span> <%= overview.total_bills %> Total Bills</div>
+          </article>
+
+          <article class="stat-card profit-card">
+            <div class="stat-top">
+              <span class="stat-icon profit-icon">↗</span>
+              <span class="stat-tag">EARNINGS</span>
+            </div>
+            <p>Gross Profit</p>
+            <h3>₹<%= Number(profit.gross_profit || 0).toLocaleString('en-IN') %></h3>
+            <div class="stat-footer"><span>✦</span> Before Discounts</div>
+          </article>
+
+          <article class="stat-card loss-card">
+            <div class="stat-top">
+              <span class="stat-icon loss-icon">↘</span>
+              <span class="stat-tag">INVENTORY</span>
+            </div>
+            <p>Product Loss</p>
+            <h3>₹<%= Number(profit.total_loss || 0).toLocaleString('en-IN') %></h3>
+            <div class="stat-footer"><span>!</span> Stock Loss Value</div>
+          </article>
+
+          <article class="stat-card net-card">
+            <div class="stat-top">
+              <span class="stat-icon net-icon">◆</span>
+              <span class="stat-tag">NET EARNINGS</span>
+            </div>
+            <p>Net Profit</p>
+            <h3 class="<%= profit.net_profit >= 0 ? 'positive' : 'negative' %>">
+              ₹<%= Number(profit.net_profit || 0).toLocaleString('en-IN') %>
+            </h3>
+            <div class="stat-footer"><span>✓</span> After Discounts</div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon average-icon">◉</span>
+              <span class="stat-tag">BILLING</span>
+            </div>
+            <p>Average Bill</p>
+            <h3>₹<%= Number(overview.average_bill || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></h3>
+            <div class="stat-footer">Average transaction value</div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon customer-icon">♙</span>
+              <span class="stat-tag">CUSTOMERS</span>
+            </div>
+            <p>Customer Visits</p>
+            <h3><%= customers.customer_visits %></h3>
+            <div class="stat-footer"><%= customers.unique_customers %> Unique Customers</div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon new-icon">✧</span>
+              <span class="stat-tag">GROWTH</span>
+            </div>
+            <p>New Customers</p>
+            <h3><%= newCustomers %></h3>
+            <div class="stat-footer">First-time customers</div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-icon discount-icon">%</span>
+              <span class="stat-tag">SAVINGS</span>
+            </div>
+            <p>Total Discounts</p>
+            <h3>₹<%= Number(overview.total_discount || 0).toLocaleString('en-IN') %></h3>
+            <div class="stat-footer">Discounts given to customers</div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- Sales Chart -->
+      <section class="chart-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="panel-eyebrow">REVENUE ANALYTICS</span>
+            <h2>Sales Performance</h2>
+            <p>Daily revenue trends for the selected period</p>
+          </div>
+          <div class="chart-legend"><span></span> Sales Revenue</div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Inventory -->
+      <section class="inventory-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="panel-eyebrow">STOCK MANAGEMENT</span>
+            <h2>Inventory Health</h2>
+            <p>Monitor your current stock position</p>
+          </div>
+          <div class="inventory-badge">LIVE INVENTORY</div>
+        </div>
+
+        <div class="inventory-grid">
+
+          <div class="inventory-item">
+            <div class="inventory-icon purple">◈</div>
+            <span>Total Products</span>
+            <strong><%= inventory.total_products %></strong>
+            <small>Registered products</small>
+          </div>
+
+          <div class="inventory-item">
+            <div class="inventory-icon blue">▦</div>
+            <span>Available Units</span>
+            <strong><%= inventory.total_stock %></strong>
+            <small>Units in stock</small>
+          </div>
+
+          <div class="inventory-item">
+            <div class="inventory-icon green">₹</div>
+            <span>Stock Purchase Value</span>
+            <strong>₹<%= Number(inventory.stock_value || 0).toLocaleString('en-IN') %></strong>
+            <small>Current stock investment</small>
+          </div>
+
+          <div class="inventory-item">
+            <div class="inventory-icon red">⚠</div>
+            <span>Low / Out of Stock</span>
+            <strong class="stock-warning"><%= inventory.low_stock %> / <%= inventory.out_of_stock %></strong>
+            <small>Requires attention</small>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Tables -->
+      <div class="data-grid">
+
+        <section class="data-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="panel-eyebrow">CUSTOMER INSIGHTS</span>
+              <h2>Top Customers</h2>
+              <p>Your most valuable customers</p>
+            </div>
+            <span class="table-count"><%= topCustomers.length %> RECORDS</span>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Mobile</th>
+                  <th>Bills</th>
+                  <th>Total Spent</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!topCustomers.length) { %>
+                  <tr><td colspan="4" class="empty-state">No customer data available</td></tr>
+                <% } %>
+
+                <% topCustomers.forEach((c, i) => { %>
+                  <tr>
+                    <td>
+                      <div class="customer-cell">
+                        <span class="rank-number"><%= i + 1 %></span>
+                        <strong><%= c.cust_name %></strong>
+                      </div>
+                    </td>
+                    <td><%= c.mobile %></td>
+                    <td><span class="count-badge"><%= c.total_bills %></span></td>
+                    <td class="amount-cell">₹<%= Number(c.total_spent || 0).toLocaleString('en-IN') %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="data-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="panel-eyebrow">PRODUCT INSIGHTS</span>
+              <h2>Best Sellers</h2>
+              <p>Your top performing products</p>
+            </div>
+            <span class="table-count"><%= bestSellers.length %> PRODUCTS</span>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Variant</th>
+                  <th>Qty</th>
+                  <th>Revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!bestSellers.length) { %>
+                  <tr><td colspan="4" class="empty-state">No sales data available</td></tr>
+                <% } %>
+
+                <% bestSellers.forEach(p => { %>
+                  <tr>
+                    <td><strong><%= p.product_name %></strong></td>
+                    <td><%= p.product_size || '-' %> / <%= p.product_color || '-' %></td>
+                    <td><span class="count-badge"><%= p.total_qty %></span></td>
+                    <td class="amount-cell">₹<%= Number(p.revenue || 0).toLocaleString('en-IN') %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Transactions -->
+      <section class="data-panel transactions-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="panel-eyebrow">PAYMENT ACTIVITY</span>
+            <h2>Recent Transactions</h2>
+            <p>Keep track of your latest business transactions</p>
+          </div>
+          <span class="table-count"><%= transactions.length %> RECORDS</span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Bill ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Discount</th>
+                <th>Status</th>
+                <th>Invoice</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (!transactions.length) { %>
+                <tr><td colspan="7" class="empty-state">No transactions found</td></tr>
+              <% } %>
+
+              <% transactions.forEach(t => { %>
+                <tr>
+                  <td><strong class="bill-id">#<%= t.bill_id %></strong></td>
+                  <td><%= t.cust_name || 'Walk-in' %></td>
+                  <td><%= t.created_at %></td>
+                  <td class="amount-cell">₹<%= Number(t.final_amount || 0).toLocaleString('en-IN') %></td>
+                  <td>₹<%= Number(t.discount || 0).toLocaleString('en-IN') %></td>
+                  <td>
+                    <span class="status-badge <%= String(t.payment_status || '').toLowerCase() === 'paid' ? 'paid' : 'pending' %>">
+                      <%= t.payment_status %>
+                    </span>
+                  </td>
+                  <td><a href="/shop/billing/<%= t.bill_id %>" class="view-invoice">View Invoice →</a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <span>Page <strong><%= page %></strong> of <strong><%= totalPages || 1 %></strong></span>
+
+          <div class="pagination-actions">
+            <% if (page > 1) { %>
+              <a href="?filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>&page=<%= page - 1 %>" class="page-btn">← Previous</a>
+            <% } %>
+
+            <% if (page < totalPages) { %>
+              <a href="?filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>&page=<%= page + 1 %>" class="page-btn next">Next →</a>
+            <% } %>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>© <%= new Date().getFullYear() %> Nova Business Suite</span>
+        <span>Designed for smarter business decisions.</span>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script id="analytics-chart-data" type="application/json"><%- JSON.stringify(chartData) %></script>
+
+</body>
+</html>

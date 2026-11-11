@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Shops | SHOPFLOW Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin-shops.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <aside class="admin-sidebar" id="adminSidebar">
+
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+                <h2>SHOPFLOW</h2>
+                <span>ADMIN CONTROL</span>
+            </div>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <a href="/admin/dashboard" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/admin/shops" class="nav-link active">
+                <i class="fa-solid fa-store"></i>
+                <span>Shop Management</span>
+                <span class="active-dot"></span>
+            </a>
+
+            <a href="/admin/subscriptions" class="nav-link">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Subscriptions</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="system-status">
+                <span class="status-indicator"></span>
+                <div>
+                    <strong>System Operational</strong>
+                    <small>Admin environment</small>
+                </div>
+            </div>
+
+            <a href="/admin/logout" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+        </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <span class="breadcrumb">ADMIN / MANAGEMENT</span>
+                    <h1>Shop Directory</h1>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="admin-avatar">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div class="admin-info">
+                    <strong>Administrator</strong>
+                    <span>Platform Access</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-content">
+
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow">
+                        <span></span>
+                        PLATFORM OPERATIONS
+                    </div>
+
+                    <h2>Registered Shops</h2>
+
+                    <p>Manage shop accounts, access status and password recovery.</p>
+                </div>
+
+                <a href="/admin/shops/new" class="register-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    Register New Shop
+                </a>
+            </div>
+
+            <% if (success) { %>
+                <div class="alert alert-success" id="successAlert">
+                    <div class="alert-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <div class="alert-content">
+                        <div id="successHtml" class="hidden">
+                            <%- success %>
+                        </div>
+
+                        <strong>Reset link generated successfully!</strong>
+                        <p>Copy the generated password reset link and share it securely.</p>
+
+                        <div class="reset-copy-row">
+                            <input
+                                type="text"
+                                id="resetLink"
+                                readonly
+                                placeholder="Extracting reset link..."
+                            >
+
+                            <button type="button" id="copyBtn">
+                                <i class="fa-regular fa-copy"></i>
+                                Copy Link
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="alert-close" type="button" data-dismiss="successAlert">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            <% } %>
+
+            <% if (error) { %>
+                <div class="alert alert-error" id="errorAlert">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+
+                    <button type="button" data-dismiss="errorAlert">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            <% } %>
+
+            <div class="directory-toolbar">
+                <div class="directory-title">
+                    <div class="directory-icon">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div>
+                        <h3>Shop Accounts</h3>
+                        <p>All registered business accounts</p>
+                    </div>
+                </div>
+
+                <div class="directory-count">
+                    <span class="count-dot"></span>
+                    <%= shops ? shops.length : 0 %> Shops Found
+                </div>
+            </div>
+
+            <div class="table-card">
+
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>SHOP DETAILS</th>
+                                <th>LOCATION</th>
+                                <th>CONTACT PERSON</th>
+                                <th>LOGIN ID</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% if (!shops || shops.length === 0) { %>
+
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="empty-icon">
+                                                <i class="fa-solid fa-store-slash"></i>
+                                            </div>
+                                            <h3>No Shops Registered</h3>
+                                            <p>Start by registering your first shop account.</p>
+
+                                            <a href="/admin/shops/new">
+                                                <i class="fa-solid fa-plus"></i>
+                                                Register First Shop
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            <% } else { %>
+
+                                <% shops.forEach(shop => { %>
+
+                                    <tr class="shop-row">
+
+                                        <td>
+                                            <div class="shop-identity">
+                                                <div class="shop-avatar">
+                                                    <%= (shop.shop_name || 'S').charAt(0).toUpperCase() %>
+                                                </div>
+
+                                                <div>
+                                                    <strong><%= shop.shop_name %></strong>
+                                                    <small>
+                                                        <%= shop.shop_no || 'No shop number' %>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="location-cell">
+                                                <i class="fa-solid fa-location-dot"></i>
+                                                <span><%= shop.area || 'N/A' %></span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="contact-cell">
+                                                <strong><%= shop.contact_person || 'N/A' %></strong>
+                                                <small><%= shop.contact_number || 'No contact number' %></small>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="login-id">
+                                                <%= shop.login_id || 'N/A' %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="status-badge <%= shop.shop_status === 'ACTIVE' ? 'status-active' : shop.shop_status === 'INACTIVE' ? 'status-inactive' : 'status-closed' %>">
+                                                <span></span>
+                                                <%= shop.shop_status %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="action-group">
+
+                                                <form
+                                                    action="/admin/shops/<%= shop.shop_id %>/status"
+                                                    method="POST"
+                                                    class="status-form"
+                                                >
+                                                    <select
+                                                        name="shop_status"
+                                                        class="status-select"
+                                                        aria-label="Change shop status"
+                                                        onchange="this.form.submit()"
+                                                    >
+                                                        <option value="ACTIVE" <%= shop.shop_status === 'ACTIVE' ? 'selected' : '' %>>
+                                                            Active
+                                                        </option>
+
+                                                        <option value="INACTIVE" <%= shop.shop_status === 'INACTIVE' ? 'selected' : '' %>>
+                                                            Inactive
+                                                        </option>
+
+                                                        <option value="CLOSED" <%= shop.shop_status === 'CLOSED' ? 'selected' : '' %>>
+                                                            Closed
+                                                        </option>
+                                                    </select>
+                                                </form>
+
+                                                <form
+                                                    action="/admin/shops/<%= shop.shop_id %>/reset-password"
+                                                    method="POST"
+                                                    class="reset-form"
+                                                >
+                                                    <button
+                                                        type="submit"
+                                                        class="reset-btn"
+                                                        onclick="return confirm('Generate password reset link for <%= shop.shop_name %>?')"
+                                                    >
+                                                        <i class="fa-solid fa-key"></i>
+                                                        Reset Link
+                                                    </button>
+                                                </form>
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                <% }) %>
+
+                            <% } %>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <span>
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Secure administrative shop management
+                    </span>
+
+                    <span>SHOPFLOW CONTROL PANEL</span>
+                </div>
+
+            </div>
+
+            <footer class="page-footer">
+                <span>© <span id="currentYear"></span> SHOPFLOW. All rights reserved.</span>
+                <span>ADMINISTRATOR CONSOLE</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="/js/admin-shops.js"></script>
+
+</body>
+</html>

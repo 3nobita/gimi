@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Access | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin-login.css">
+</head>
+
+<body>
+
+<div class="admin-shell">
+
+    <!-- Background Decorations -->
+    <div class="background-grid"></div>
+    <div class="red-glow glow-one"></div>
+    <div class="red-glow glow-two"></div>
+
+    <!-- Left Brand Section -->
+    <section class="brand-panel">
+
+        <div class="brand-top">
+            <div class="brand-symbol">
+                <i class="fa-solid fa-cube"></i>
+            </div>
+
+            <span>SHOPFLOW <small>HQ</small></span>
+        </div>
+
+        <div class="brand-content">
+
+            <div class="system-label">
+                <span class="pulse-dot"></span>
+                CENTRAL MANAGEMENT SYSTEM
+            </div>
+
+            <h1>
+                Control<br>
+                Every<span> Move.</span>
+            </h1>
+
+            <p>
+                One command center. Complete business visibility.
+                Manage your shops, monitor subscriptions and
+                keep the entire platform running.
+            </p>
+
+            <div class="brand-divider"></div>
+
+            <div class="feature-list">
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+
+                    <div>
+                        <strong>Shop Management</strong>
+                        <span>Manage registered businesses</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <div>
+                        <strong>Platform Intelligence</strong>
+                        <span>Monitor overall platform activity</span>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+
+                    <div>
+                        <strong>Subscription Control</strong>
+                        <span>Manage plans and access</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="brand-footer">
+            <span>© <span id="year"></span> SHOPFLOW</span>
+            <span>PLATFORM OPERATIONS</span>
+        </div>
+
+    </section>
+
+
+    <!-- Right Login Section -->
+    <section class="login-panel">
+
+        <div class="login-top">
+            <span class="restricted-label">
+                <i class="fa-solid fa-lock"></i>
+                RESTRICTED AREA
+            </span>
+
+            <span class="admin-version">ADMIN PORTAL / 01</span>
+        </div>
+
+        <div class="login-content">
+
+            <div class="admin-emblem">
+                <div class="emblem-inner">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <span class="emblem-ring ring-one"></span>
+                <span class="emblem-ring ring-two"></span>
+            </div>
+
+            <div class="login-heading">
+                <span>WELCOME BACK</span>
+                <h2>Administrator<span>.</span></h2>
+                <p>Authenticate to access your control center.</p>
+            </div>
+
+            <% if (error) { %>
+                <div class="error-message">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <form action="/admin/login" method="POST" id="adminLoginForm">
+
+                <div class="input-group">
+
+                    <label for="email">ADMIN EMAIL</label>
+
+                    <div class="input-field">
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your admin email"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="input-group">
+
+                    <div class="password-label">
+                        <label for="password">PASSWORD</label>
+                        <span>SECURE ACCESS</span>
+                    </div>
+
+                    <div class="input-field">
+                        <i class="fa-solid fa-key"></i>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button type="button" id="togglePassword" aria-label="Show password">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="login-button" id="loginButton">
+
+                    <span>Access Control Center</span>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </form>
+
+            <div class="security-note">
+                <i class="fa-solid fa-shield-halved"></i>
+
+                <span>
+                    Protected administrator access.
+                    Unauthorized access is prohibited.
+                </span>
+            </div>
+
+        </div>
+
+        <div class="login-footer">
+            <span>POWERED BY SHOPFLOW</span>
+            <span>SECURE ADMINISTRATOR LOGIN</span>
+        </div>
+
+    </section>
+
+</div>
+
+<script src="/js/admin-login.js"></script>
+
+</body>
+</html>

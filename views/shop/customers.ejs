@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customers - <%= shopName %> | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/customers.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <span>SHOPFLOW</span>
+        </div>
+
+        <div class="shop-profile">
+            <div class="shop-avatar">
+                <i class="fa-solid fa-store"></i>
+            </div>
+
+            <div class="shop-profile-info">
+                <strong><%= shopName %></strong>
+                <span>Shop Workspace</span>
+            </div>
+
+            <i class="fa-solid fa-chevron-down profile-chevron"></i>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="/shop/analytics" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/shop/billing" class="nav-link">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Billing & Invoices</span>
+            </a>
+
+            <a href="/shop/products" class="nav-link">
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </a>
+
+            <a href="/shop/customers" class="nav-link active">
+                <i class="fa-solid fa-users"></i>
+                <span>Customers</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-help">
+                <div class="help-icon">
+                    <i class="fa-regular fa-circle-question"></i>
+                </div>
+
+                <div>
+                    <strong>Need assistance?</strong>
+                    <span>We're here to help.</span>
+                </div>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+
+            <div class="sidebar-version">
+                SHOPFLOW BUSINESS SUITE · 1.0
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <span class="breadcrumb">
+                        Workspace / <strong>Customers</strong>
+                    </span>
+
+                    <h2>Customer Management</h2>
+                </div>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="topbar-date">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="page-container">
+
+            <!-- PAGE HEADING -->
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        CUSTOMER RELATIONSHIP MANAGEMENT
+                    </div>
+
+                    <h1>Customers</h1>
+
+                    <p>
+                        Manage customer profiles, purchase activity and relationships.
+                    </p>
+                </div>
+
+                <a href="/shop/customers/new" class="add-customer-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    Add New Customer
+                </a>
+
+            </div>
+
+            <!-- ALERTS -->
+
+            <% if (success) { %>
+                <div class="alert alert-success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><%= success %></span>
+                </div>
+            <% } %>
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <!-- CUSTOMER OVERVIEW -->
+
+            <div class="overview-card">
+
+                <div class="overview-left">
+
+                    <div class="overview-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div>
+                        <span>Customer Directory</span>
+                        <h3><%= customers.length %> <small>Customers</small></h3>
+                        <p>Your currently displayed customer records</p>
+                    </div>
+
+                </div>
+
+                <div class="overview-right">
+                    <div class="overview-decoration decoration-one"></div>
+                    <div class="overview-decoration decoration-two"></div>
+
+                    <i class="fa-solid fa-address-book"></i>
+                </div>
+
+            </div>
+
+            <!-- SEARCH -->
+
+            <section class="search-card">
+
+                <div class="search-heading">
+                    <div>
+                        <h3>Find Customers</h3>
+                        <p>Search using customer name or mobile number.</p>
+                    </div>
+
+                    <span class="search-label">
+                        <i class="fa-solid fa-filter"></i>
+                        CUSTOMER FILTER
+                    </span>
+                </div>
+
+                <form action="/shop/customers" method="GET" class="search-form">
+
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input
+                            type="text"
+                            name="search"
+                            id="customerSearch"
+                            value="<%= query.search || '' %>"
+                            placeholder="Search by customer name or mobile number..."
+                        >
+
+                        <% if (query.search) { %>
+                            <a href="/shop/customers" class="clear-search" title="Clear search">
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        <% } %>
+                    </div>
+
+                    <button type="submit" class="search-button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Search
+                    </button>
+
+                    <a href="/shop/customers" class="reset-button">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        Reset
+                    </a>
+
+                </form>
+
+            </section>
+
+            <!-- CUSTOMER TABLE -->
+
+            <section class="table-card">
+
+                <div class="table-header">
+
+                    <div>
+                        <h3>Customer Directory</h3>
+                        <p>View and manage your customer records.</p>
+                    </div>
+
+                    <div class="table-header-right">
+                        <span class="record-count">
+                            <span class="live-dot"></span>
+                            <%= customers.length %> Records
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>CUSTOMER</th>
+                                <th>MOBILE NUMBER</th>
+                                <th>TOTAL BILLS</th>
+                                <th>TOTAL SPENDING</th>
+                                <th>TOTAL DISCOUNT</th>
+                                <th>LAST PURCHASE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% if (customers.length === 0) { %>
+
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="empty-state">
+
+                                            <div class="empty-icon">
+                                                <i class="fa-solid fa-users"></i>
+                                            </div>
+
+                                            <h3>No Customers Found</h3>
+
+                                            <p>
+                                                <% if (query.search) { %>
+                                                    No customers match your search. Try another name or mobile number.
+                                                <% } else { %>
+                                                    Start building your customer directory by adding your first customer.
+                                                <% } %>
+                                            </p>
+
+                                            <% if (query.search) { %>
+                                                <a href="/shop/customers" class="empty-action">
+                                                    Clear Search
+                                                </a>
+                                            <% } else { %>
+                                                <a href="/shop/customers/new" class="empty-action">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                    Add First Customer
+                                                </a>
+                                            <% } %>
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            <% } else { %>
+
+                                <% customers.forEach(cust => { %>
+
+                                    <tr class="customer-row">
+
+                                        <td>
+                                            <div class="customer-info">
+
+                                                <div class="customer-avatar">
+                                                    <%= (cust.cust_name || '?').trim().charAt(0).toUpperCase() %>
+                                                </div>
+
+                                                <div class="customer-details">
+                                                    <strong><%= cust.cust_name %></strong>
+
+                                                    <% if (cust.address) { %>
+                                                        <span>
+                                                            <i class="fa-solid fa-location-dot"></i>
+                                                            <%= cust.address %>
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span>Customer</span>
+                                                    <% } %>
+                                                </div>
+
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="mobile-number">
+                                                <i class="fa-solid fa-phone"></i>
+                                                <%= cust.mobile %>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="bill-count">
+                                                <%= cust.total_bills %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <strong class="spending-amount">
+                                                ₹<%= Number(cust.total_spending || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                            </strong>
+                                        </td>
+
+                                        <td>
+                                            <span class="discount-amount">
+                                                ₹<%= Number(cust.total_discount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="purchase-date">
+                                                <% if (cust.last_purchase_date) { %>
+                                                    <i class="fa-regular fa-calendar-check"></i>
+                                                    <%= cust.last_purchase_date.split('T')[0] %>
+                                                <% } else { %>
+                                                    <span class="no-purchase">No purchases yet</span>
+                                                <% } %>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="action-buttons">
+
+                                                <a
+                                                    href="/shop/customers/<%= cust.cust_id %>/history"
+                                                    class="action-btn history-btn"
+                                                    title="Purchase History"
+                                                >
+                                                    <i class="fa-solid fa-clock-rotate-left"></i>
+                                                    <span>History</span>
+                                                </a>
+
+                                                <a
+                                                    href="/shop/customers/<%= cust.cust_id %>/edit"
+                                                    class="action-btn edit-btn"
+                                                    title="Edit Customer"
+                                                >
+                                                    <i class="fa-solid fa-pen"></i>
+                                                    <span>Edit</span>
+                                                </a>
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                <% }) %>
+
+                            <% } %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="table-footer">
+                    <span>
+                        Showing <strong><%= customers.length %></strong> customer records
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Secure Customer Management
+                    </span>
+                </div>
+
+            </section>
+
+            <footer class="page-footer">
+                <span>© <%= new Date().getFullYear() %> SHOPFLOW</span>
+                <span>Built for smarter business management.</span>
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="/js/customers.js"></script>
+
+</body>
+</html>

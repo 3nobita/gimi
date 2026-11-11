@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register Shop | SHOPFLOW Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin-shop-new.css">
+</head>
+
+<body>
+
+<div class="registration-layout">
+
+    <header class="top-header">
+        <a href="/admin/shops" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Shop Directory</span>
+        </a>
+
+        <div class="header-brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <span>SHOPFLOW <small>ADMIN</small></span>
+        </div>
+
+        <div class="secure-label">
+            <i class="fa-solid fa-shield-halved"></i>
+            Secure Registration
+        </div>
+    </header>
+
+    <main class="registration-main">
+
+        <section class="intro-section">
+            <div class="intro-content">
+                <div class="eyebrow">
+                    <span></span>
+                    SHOP ONBOARDING
+                </div>
+
+                <h1>Bring a new shop<br>into <span>SHOPFLOW.</span></h1>
+
+                <p>
+                    Create a business account, configure owner credentials
+                    and get the shop ready for operations.
+                </p>
+            </div>
+
+            <div class="intro-graphic">
+                <div class="graphic-circle circle-one"></div>
+                <div class="graphic-circle circle-two"></div>
+
+                <div class="graphic-icon">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+
+                <div class="graphic-tag">
+                    <i class="fa-solid fa-circle-check"></i>
+                    New Account
+                </div>
+            </div>
+        </section>
+
+        <% if (error) { %>
+            <div class="error-alert" id="errorAlert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span><%= error %></span>
+                <button type="button" id="closeError">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        <% } %>
+
+        <div class="registration-grid">
+
+            <section class="form-card">
+
+                <div class="form-card-heading">
+                    <div>
+                        <span class="section-kicker">ACCOUNT SETUP</span>
+                        <h2>Shop Registration</h2>
+                        <p>Enter the shop and owner information below.</p>
+                    </div>
+
+                    <div class="step-indicator">
+                        <span>01</span>
+                        <div></div>
+                        <span>03</span>
+                    </div>
+                </div>
+
+                <form action="/admin/shops/new" method="POST" id="shopRegistrationForm">
+
+                    <!-- SECTION 1 -->
+                    <div class="form-section">
+
+                        <div class="section-heading">
+                            <div class="section-icon">
+                                <i class="fa-solid fa-store"></i>
+                            </div>
+
+                            <div>
+                                <h3>Business Information</h3>
+                                <p>Basic details about the registered shop.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="field-group">
+                                <label for="shopName">
+                                    Shop Name <span>*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="shopName"
+                                    name="shop_name"
+                                    placeholder="e.g. Shree Ram Fashion"
+                                    required
+                                    maxlength="100"
+                                >
+                            </div>
+
+                            <div class="field-group">
+                                <label for="shopNo">Shop No / Code</label>
+
+                                <input
+                                    type="text"
+                                    id="shopNo"
+                                    name="shop_no"
+                                    placeholder="e.g. SHOP-001"
+                                    maxlength="50"
+                                >
+                            </div>
+
+                            <div class="field-group">
+                                <label for="area">
+                                    Area <span>*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="area"
+                                    name="area"
+                                    placeholder="e.g. Thane West"
+                                    required
+                                    maxlength="100"
+                                >
+                            </div>
+
+                            <div class="field-group">
+                                <label for="email">Business Email</label>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="shop@example.com"
+                                >
+                            </div>
+
+                            <div class="field-group full-width">
+                                <label for="shopAddress">Complete Shop Address</label>
+
+                                <textarea
+                                    id="shopAddress"
+                                    name="shop_address"
+                                    rows="3"
+                                    placeholder="Enter complete business address..."
+                                    maxlength="500"
+                                ></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- SECTION 2 -->
+                    <div class="form-section">
+
+                        <div class="section-heading">
+                            <div class="section-icon">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+
+                            <div>
+                                <h3>Owner & Contact Details</h3>
+                                <p>Primary person responsible for the shop.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="field-group">
+                                <label for="contactPerson">
+                                    Contact Person <span>*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="contactPerson"
+                                    name="contact_person"
+                                    placeholder="Owner's full name"
+                                    required
+                                    maxlength="100"
+                                >
+                            </div>
+
+                            <div class="field-group">
+                                <label for="contactNumber">
+                                    Contact Number <span>*</span>
+                                </label>
+
+                                <div class="phone-input">
+                                    <span>+91</span>
+
+                                    <input
+                                        type="tel"
+                                        id="contactNumber"
+                                        name="contact_number"
+                                        placeholder="10-digit mobile number"
+                                        maxlength="10"
+                                        inputmode="numeric"
+                                        pattern="[6-9][0-9]{9}"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- SECTION 3 -->
+                    <div class="form-section">
+
+                        <div class="section-heading">
+                            <div class="section-icon credential-icon">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+
+                            <div>
+                                <h3>Owner Login Credentials</h3>
+                                <p>Create login details for the shop owner.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="field-group">
+                                <label for="loginId">
+                                    Login ID <span>*</span>
+                                </label>
+
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-user"></i>
+
+                                    <input
+                                        type="text"
+                                        id="loginId"
+                                        name="login_id"
+                                        placeholder="shop_shree_ram"
+                                        required
+                                        minlength="4"
+                                        maxlength="50"
+                                    >
+                                </div>
+
+                                <small>Unique username for shop login.</small>
+                            </div>
+
+                            <div class="field-group">
+                                <label for="password">
+                                    Temporary Password <span>*</span>
+                                </label>
+
+                                <div class="input-with-icon password-wrapper">
+                                    <i class="fa-solid fa-key"></i>
+
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        placeholder="Create temporary password"
+                                        required
+                                        minlength="8"
+                                    >
+
+                                    <button type="button" id="togglePassword" aria-label="Show password">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+
+                                <small>Use at least 8 characters.</small>
+                            </div>
+
+                        </div>
+
+                        <div class="security-notice">
+                            <i class="fa-solid fa-shield-halved"></i>
+
+                            <div>
+                                <strong>Credential Security</strong>
+                                <p>
+                                    Share login credentials securely with the shop owner.
+                                    Never store plain-text passwords in your database.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions">
+
+                        <a href="/admin/shops" class="cancel-btn">
+                            Cancel
+                        </a>
+
+                        <button type="submit" id="submitButton" class="submit-btn">
+                            <span>Create Shop Account</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+            <!-- LIVE PREVIEW -->
+            <aside class="preview-column">
+
+                <div class="preview-heading">
+                    <span class="section-kicker">LIVE PREVIEW</span>
+                    <h3>Business Identity</h3>
+                    <p>Preview updates as you fill the registration form.</p>
+                </div>
+
+                <div class="preview-card">
+
+                    <div class="preview-banner">
+                        <div class="preview-banner-pattern"></div>
+
+                        <div class="preview-logo" id="previewInitial">
+                            S
+                        </div>
+                    </div>
+
+                    <div class="preview-details">
+
+                        <span class="preview-label">BUSINESS ACCOUNT</span>
+
+                        <h3 id="previewShopName">Your Shop Name</h3>
+
+                        <div class="preview-location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span id="previewArea">Shop Location</span>
+                        </div>
+
+                        <div class="preview-divider"></div>
+
+                        <div class="preview-info">
+                            <span>SHOP CODE</span>
+                            <strong id="previewShopNo">Not assigned</strong>
+                        </div>
+
+                        <div class="preview-info">
+                            <span>OWNER / CONTACT</span>
+                            <strong id="previewContact">Not provided</strong>
+                        </div>
+
+                        <div class="preview-info">
+                            <span>MOBILE NUMBER</span>
+                            <strong id="previewMobile">Not provided</strong>
+                        </div>
+
+                        <div class="preview-info">
+                            <span>LOGIN ID</span>
+                            <strong id="previewLogin">Not created</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="preview-footer">
+                        <span class="preview-status-dot"></span>
+                        ACCOUNT WILL BE CREATED
+                    </div>
+
+                </div>
+
+                <div class="checklist-card">
+                    <div class="checklist-heading">
+                        <i class="fa-solid fa-list-check"></i>
+                        Registration Checklist
+                    </div>
+
+                    <div class="checklist-item" id="checkShop">
+                        <i class="fa-regular fa-circle"></i>
+                        <span>Business name</span>
+                    </div>
+
+                    <div class="checklist-item" id="checkLocation">
+                        <i class="fa-regular fa-circle"></i>
+                        <span>Shop location</span>
+                    </div>
+
+                    <div class="checklist-item" id="checkContact">
+                        <i class="fa-regular fa-circle"></i>
+                        <span>Owner contact</span>
+                    </div>
+
+                    <div class="checklist-item" id="checkLogin">
+                        <i class="fa-regular fa-circle"></i>
+                        <span>Login credentials</span>
+                    </div>
+                </div>
+
+                <div class="admin-note">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p>
+                        Shop accounts are created and managed by the platform administrator.
+                    </p>
+                </div>
+
+            </aside>
+
+        </div>
+
+        <footer class="page-footer">
+            <span>© <span id="currentYear"></span> SHOPFLOW ADMIN</span>
+            <span>SECURE PLATFORM ONBOARDING</span>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="/js/admin-shop-new.js"></script>
+
+</body>
+</html>

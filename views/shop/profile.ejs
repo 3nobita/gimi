@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Profile - <%= shopName %></title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+                <h2>SHOPFLOW</h2>
+                <span>BUSINESS SUITE</span>
+            </div>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="/shop/analytics" class="nav-item">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/shop/billing" class="nav-item">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Billing</span>
+            </a>
+
+            <a href="/shop/products" class="nav-item">
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </a>
+
+            <a href="/shop/customers" class="nav-item">
+                <i class="fa-solid fa-users"></i>
+                <span>Customers</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-label settings-label">SETTINGS</div>
+
+        <nav class="sidebar-nav">
+            <a href="/shop/profile" class="nav-item active">
+                <i class="fa-solid fa-store"></i>
+                <span>Shop Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-shop">
+                <div class="shop-avatar">
+                    <%= shopName.charAt(0).toUpperCase() %>
+                </div>
+
+                <div class="shop-info">
+                    <strong><%= shopName %></strong>
+                    <span>Shop Owner</span>
+                </div>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <span class="breadcrumb">Settings / Shop Profile</span>
+                    <h1>Shop Profile</h1>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="login-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span><%= loginId %></span>
+                </div>
+
+                <div class="top-avatar">
+                    <%= shopName.charAt(0).toUpperCase() %>
+                </div>
+
+            </div>
+
+        </header>
+
+        <!-- Page Content -->
+        <section class="page-content">
+
+            <div class="page-heading">
+                <div>
+                    <h2>Manage your shop details</h2>
+                    <p>Keep your business information accurate and up to date.</p>
+                </div>
+
+                <div class="profile-status">
+                    <span class="status-dot"></span>
+                    Profile Management
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <% if (success) { %>
+                <div class="alert success-alert">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><%= success %></span>
+                    <button type="button" class="alert-close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            <% } %>
+
+            <% if (error) { %>
+                <div class="alert error-alert">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                    <button type="button" class="alert-close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            <% } %>
+
+            <div class="profile-layout">
+
+                <!-- Form Section -->
+                <div class="form-card">
+
+                    <div class="card-heading">
+                        <div class="heading-icon">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+
+                        <div>
+                            <h3>Business Information</h3>
+                            <p>Update your official shop details.</p>
+                        </div>
+                    </div>
+
+                    <form action="/shop/profile/update" method="POST" id="profileForm">
+
+                        <!-- Basic Details -->
+                        <div class="form-section">
+
+                            <div class="section-heading">
+                                <span>01</span>
+                                <h4>Basic Details</h4>
+                            </div>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+                                    <label>Shop Name <span>*</span></label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-store"></i>
+                                        <input
+                                            type="text"
+                                            name="shop_name"
+                                            id="shopName"
+                                            value="<%= shop.shop_name %>"
+                                            placeholder="Enter shop name"
+                                            required
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Shop No / Code</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-hashtag"></i>
+                                        <input
+                                            type="text"
+                                            name="shop_no"
+                                            value="<%= shop.shop_no || '' %>"
+                                            placeholder="Enter shop code"
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Area <span>*</span></label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <input
+                                            type="text"
+                                            name="area"
+                                            value="<%= shop.area %>"
+                                            placeholder="Enter area"
+                                            required
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-envelope"></i>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value="<%= shop.email || '' %>"
+                                            placeholder="shop@example.com"
+                                        >
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Address -->
+                        <div class="form-section">
+
+                            <div class="section-heading">
+                                <span>02</span>
+                                <h4>Location Details</h4>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Shop Address</label>
+                                <div class="input-wrapper textarea-wrapper">
+                                    <i class="fa-solid fa-map-location-dot"></i>
+                                    <textarea
+                                        name="shop_address"
+                                        rows="3"
+                                        placeholder="Enter complete shop address"
+                                    ><%= shop.shop_address || '' %></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Google Maps Link</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-brands fa-google"></i>
+                                    <input
+                                        type="url"
+                                        name="google_link"
+                                        id="googleLink"
+                                        value="<%= shop.google_link || '' %>"
+                                        placeholder="https://maps.google.com/..."
+                                    >
+                                </div>
+                                <small class="field-hint">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    Add your Google Maps location so customers can find your shop.
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Contact -->
+                        <div class="form-section">
+
+                            <div class="section-heading">
+                                <span>03</span>
+                                <h4>Contact Information</h4>
+                            </div>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+                                    <label>Contact Person <span>*</span></label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-user"></i>
+                                        <input
+                                            type="text"
+                                            name="contact_person"
+                                            value="<%= shop.contact_person %>"
+                                            placeholder="Contact person name"
+                                            required
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Contact Number <span>*</span></label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <input
+                                            type="tel"
+                                            name="contact_number"
+                                            value="<%= shop.contact_number %>"
+                                            placeholder="Contact number"
+                                            required
+                                        >
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-actions">
+
+                            <a href="/shop/analytics" class="cancel-btn">
+                                Cancel
+                            </a>
+
+                            <button type="submit" class="save-btn" id="saveButton">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Save Changes</span>
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <!-- Preview Section -->
+                <aside class="preview-column">
+
+                    <div class="preview-card">
+
+                        <div class="preview-top">
+                            <span class="preview-label">LIVE PREVIEW</span>
+                            <span class="live-indicator">
+                                <span></span> LIVE
+                            </span>
+                        </div>
+
+                        <div class="preview-brand">
+                            <div class="preview-avatar" id="previewAvatar">
+                                <%= shop.shop_name.charAt(0).toUpperCase() %>
+                            </div>
+
+                            <h3 id="previewShopName"><%= shop.shop_name %></h3>
+
+                            <p id="previewArea">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <%= shop.area %>
+                            </p>
+                        </div>
+
+                        <div class="preview-divider"></div>
+
+                        <div class="preview-detail">
+                            <div class="detail-icon">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div>
+                                <span>Contact Person</span>
+                                <strong id="previewContact"><%= shop.contact_person %></strong>
+                            </div>
+                        </div>
+
+                        <div class="preview-detail">
+                            <div class="detail-icon">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <span>Phone Number</span>
+                                <strong id="previewPhone"><%= shop.contact_number %></strong>
+                            </div>
+                        </div>
+
+                        <div class="preview-detail">
+                            <div class="detail-icon">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div>
+                                <span>Email Address</span>
+                                <strong id="previewEmail"><%= shop.email || 'Not provided' %></strong>
+                            </div>
+                        </div>
+
+                        <div class="preview-detail">
+                            <div class="detail-icon">
+                                <i class="fa-solid fa-map"></i>
+                            </div>
+                            <div>
+                                <span>Shop Address</span>
+                                <strong id="previewAddress"><%= shop.shop_address || 'Not provided' %></strong>
+                            </div>
+                        </div>
+
+                        <a
+                            href="<%= shop.google_link || '#' %>"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="map-link"
+                            id="previewMapLink"
+                            style="<%= shop.google_link ? '' : 'display:none;' %>"
+                        >
+                            <i class="fa-solid fa-location-arrow"></i>
+                            View Shop Location
+                        </a>
+
+                    </div>
+
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+
+                        <div>
+                            <h4>Keep it updated</h4>
+                            <p>
+                                Accurate contact details and location help your customers
+                                connect with your business easily.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="account-card">
+                        <div class="account-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+
+                        <div>
+                            <strong>Account Information</strong>
+                            <span>Login ID: <%= loginId %></span>
+                            <small>Your login credentials are managed separately.</small>
+                        </div>
+                    </div>
+
+                </aside>
+
+            </div>
+
+            <footer class="page-footer">
+                <span>© <span id="currentYear"></span> SHOPFLOW</span>
+                <span>Designed for smarter business management.</span>
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="/js/profile.js"></script>
+</body>
+</html>

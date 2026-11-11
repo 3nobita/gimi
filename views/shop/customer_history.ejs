@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase History - <%= customer.cust_name %> | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/customer-history.css">
+</head>
+
+<body>
+<%
+    const totalPurchases = purchases.length;
+    const totalSpent = purchases.reduce((sum, p) => sum + Number(p.spending || 0), 0);
+    const totalDiscount = purchases.reduce((sum, p) => sum + Number(p.get_discount || 0), 0);
+    const paidBills = purchases.filter(p => p.payment_status === 'PAID').length;
+    const pendingBills = totalPurchases - paidBills;
+%>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div>
+                <h2>SHOPFLOW</h2>
+                <span>Business Suite</span>
+            </div>
+        </div>
+
+        <div class="shop-profile">
+            <div class="shop-avatar"><i class="fa-solid fa-store"></i></div>
+            <div class="shop-info">
+                <strong><%= shopName %></strong>
+                <span>Shop Owner</span>
+            </div>
+            <span class="online-dot"></span>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <a href="/shop/analytics" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+            </a>
+            <a href="/shop/billing" class="nav-link">
+                <i class="fa-solid fa-receipt"></i><span>Billing</span>
+            </a>
+            <a href="/shop/products" class="nav-link">
+                <i class="fa-solid fa-box"></i><span>Products</span>
+            </a>
+            <a href="/shop/customers" class="nav-link active">
+                <i class="fa-solid fa-users"></i><span>Customers</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="help-card">
+                <div class="help-icon"><i class="fa-solid fa-headset"></i></div>
+                <strong>Need help?</strong>
+                <p>We're here to support your business.</p>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <div class="breadcrumb">Customers <span>/</span> Purchase History</div>
+                    <h1>Customer Activity</h1>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="date-display">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+                <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
+            </div>
+        </header>
+
+        <section class="page-content">
+
+            <!-- PAGE HEADING -->
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow"><span></span> CUSTOMER INSIGHTS</div>
+                    <h2>Purchase History</h2>
+                    <p>Track customer spending, discounts and billing activity.</p>
+                </div>
+
+                <a href="/shop/customers" class="back-button">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Customers
+                </a>
+            </div>
+
+            <!-- CUSTOMER PROFILE -->
+            <section class="customer-hero">
+                <div class="customer-identity">
+                    <div class="customer-avatar">
+                        <%= (customer.cust_name || 'C').charAt(0).toUpperCase() %>
+                    </div>
+
+                    <div class="customer-info">
+                        <span class="profile-tag">
+                            <i class="fa-solid fa-circle-check"></i> CUSTOMER PROFILE
+                        </span>
+                        <h2><%= customer.cust_name %></h2>
+
+                        <div class="customer-meta">
+                            <span><i class="fa-solid fa-phone"></i> <%= customer.mobile %></span>
+
+                            <% if (customer.address) { %>
+                                <span><i class="fa-solid fa-location-dot"></i> <%= customer.address %></span>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="customer-total">
+                    <span>Total Customer Spending</span>
+                    <strong>₹<%= totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></strong>
+                    <small>Across <%= totalPurchases %> purchase(s)</small>
+                </div>
+            </section>
+
+            <!-- SUMMARY CARDS -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span>Total Purchases</span>
+                        <div class="stat-icon purple"><i class="fa-solid fa-receipt"></i></div>
+                    </div>
+                    <h3><%= totalPurchases %></h3>
+                    <p>Recorded bills</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span>Total Spending</span>
+                        <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
+                    </div>
+                    <h3>₹<%= totalSpent.toLocaleString('en-IN', { maximumFractionDigits: 2 }) %></h3>
+                    <p>Customer purchase value</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span>Discount Given</span>
+                        <div class="stat-icon orange"><i class="fa-solid fa-tag"></i></div>
+                    </div>
+                    <h3>₹<%= totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 }) %></h3>
+                    <p>Total savings received</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span>Pending Bills</span>
+                        <div class="stat-icon red"><i class="fa-solid fa-clock"></i></div>
+                    </div>
+                    <h3><%= pendingBills %></h3>
+                    <p><%= paidBills %> paid bill(s)</p>
+                </div>
+
+            </div>
+
+            <!-- PURCHASE HISTORY -->
+            <section class="history-card">
+
+                <div class="history-header">
+                    <div>
+                        <div class="section-title">
+                            <div class="section-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <div>
+                                <h3>Purchase Activity</h3>
+                                <p>Complete billing history of this customer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="record-count">
+                        <i class="fa-solid fa-database"></i>
+                        <span id="recordCount"><%= totalPurchases %></span> Records
+                    </span>
+                </div>
+
+                <!-- FILTER TOOLBAR -->
+                <div class="table-toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="historySearch"
+                            placeholder="Search bill ID or payment status...">
+                    </div>
+
+                    <div class="filter-controls">
+                        <select id="statusFilter">
+                            <option value="ALL">All Payments</option>
+                            <option value="PAID">Paid</option>
+                            <option value="UNPAID">Unpaid</option>
+                            <option value="PARTIAL">Partial</option>
+                        </select>
+
+                        <select id="pageSize">
+                            <option value="8">8 per page</option>
+                            <option value="15">15 per page</option>
+                            <option value="25">25 per page</option>
+                            <option value="50">50 per page</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>INVOICE</th>
+                                <th>DATE</th>
+                                <th>TOTAL BILL</th>
+                                <th>DISCOUNT</th>
+                                <th>SPENDING</th>
+                                <th>PAYMENT STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="purchaseTableBody">
+                            <% if (purchases.length === 0) { %>
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="empty-state">
+                                            <div class="empty-icon"><i class="fa-solid fa-receipt"></i></div>
+                                            <h3>No purchase history yet</h3>
+                                            <p>When this customer makes a purchase, the billing history will appear here.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } else { %>
+
+                                <% purchases.forEach(p => { %>
+                                    <tr class="purchase-row"
+                                        data-search="<%= ('#' + p.bill_id + ' ' + p.payment_status).toLowerCase() %>"
+                                        data-status="<%= p.payment_status %>">
+
+                                        <td>
+                                            <span class="invoice-id">#<%= p.bill_id %></span>
+                                        </td>
+
+                                        <td>
+                                            <div class="date-cell">
+                                                <i class="fa-regular fa-calendar"></i>
+                                                <%= p.created_at.split('T')[0] %>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="amount">₹<%= Number(p.total_amount || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }) %></span>
+                                        </td>
+
+                                        <td>
+                                            <span class="discount-amount">
+                                                -₹<%= Number(p.get_discount || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }) %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <strong class="spending-amount">
+                                                ₹<%= Number(p.spending || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }) %>
+                                            </strong>
+                                        </td>
+
+                                        <td>
+                                            <span class="status-badge <%= p.payment_status === 'PAID' ? 'paid' : p.payment_status === 'PARTIAL' ? 'partial' : 'unpaid' %>">
+                                                <span></span><%= p.payment_status %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <a href="/shop/billing/<%= p.bill_id %>" class="view-bill" title="View Bill">
+                                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- EMPTY FILTER RESULT -->
+                <div class="filter-empty" id="filterEmpty" hidden>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <h3>No matching purchases</h3>
+                    <p>Try changing your search or payment filter.</p>
+                    <button type="button" id="clearFilters">Clear Filters</button>
+                </div>
+
+                <!-- PAGINATION -->
+                <div class="pagination-footer" id="paginationFooter">
+                    <div class="pagination-info" id="paginationInfo">
+                        Showing 0 records
+                    </div>
+
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+            </section>
+
+        </section>
+
+        <footer class="footer">
+            <span>© <%= new Date().getFullYear() %> SHOPFLOW. All rights reserved.</span>
+            <span>Built for smarter business <i class="fa-solid fa-heart"></i></span>
+        </footer>
+
+    </main>
+</div>
+
+<script src="/js/customer-history.js"></script>
+</body>
+</html>

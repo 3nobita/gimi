@@ -1,0 +1,109 @@
+<aside class="shop-sidebar" id="shopSidebar">
+  <!-- Brand -->
+  <div class="sidebar-brand">
+    <a href="/shop/analytics" class="brand-logo">
+      <span class="brand-icon"><%= (shopName || 'S').charAt(0).toUpperCase() %></span>
+      <span class="brand-info">
+        <strong><%= shopName || 'My Shop' %></strong>
+        <small>SHOP WORKSPACE</small>
+      </span>
+    </a>
+
+    <button class="sidebar-collapse" id="sidebarCollapse" type="button" title="Collapse sidebar">
+      <i data-lucide="panel-left-close"></i>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <div class="sidebar-navigation">
+    <p class="sidebar-label">MAIN MENU</p>
+
+    <a href="/shop/analytics"
+       class="sidebar-link <%= activePage === 'analytics' ? 'active' : '' %>"
+       data-label="Overview">
+      <i data-lucide="layout-dashboard"></i>
+      <span>Overview</span>
+    </a>
+
+    <a href="/shop/billing"
+       class="sidebar-link <%= activePage === 'billing' ? 'active' : '' %>"
+       data-label="Billing">
+      <i data-lucide="receipt"></i>
+      <span>Billing & Invoices</span>
+    </a>
+
+    <a href="/shop/products"
+       class="sidebar-link <%= activePage === 'products' ? 'active' : '' %>"
+       data-label="Products">
+      <i data-lucide="package"></i>
+      <span>Products</span>
+    </a>
+
+    <a href="/shop/customers"
+       class="sidebar-link <%= activePage === 'customers' ? 'active' : '' %>"
+       data-label="Customers">
+      <i data-users="users"></i>
+      <span>Customers</span>
+    </a>
+
+    <a href="/shop/analytics"
+       class="sidebar-link <%= activePage === 'analytics' ? 'active' : '' %>"
+       data-label="Analytics">
+      <i data-lucide="chart-no-axes-combined"></i>
+      <span>Analytics</span>
+    </a>
+
+    <div class="sidebar-divider"></div>
+
+    <p class="sidebar-label">PREFERENCES</p>
+
+    <button class="sidebar-link theme-toggle" id="themeToggle" type="button" data-label="Change Theme">
+      <i data-lucide="moon" id="themeIcon"></i>
+      <span id="themeText">Dark Mode</span>
+      <span class="theme-indicator"></span>
+    </button>
+  </div>
+
+  <!-- Bottom Profile -->
+  <div class="sidebar-bottom">
+    <div class="sidebar-profile">
+      <div class="profile-avatar">
+        <%= (shopName || 'S').charAt(0).toUpperCase() %>
+      </div>
+
+      <div class="profile-info">
+        <strong><%= shopName || 'Shop Owner' %></strong>
+        <small>Shop Owner</small>
+      </div>
+
+      <a href="/shop/logout" class="logout-icon" title="Logout">
+        <i data-lucide="log-out"></i>
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <span class="online-dot"></span>
+      System Operational
+    </div>
+  </div>
+</aside>
+
+<!-- Mobile Header -->
+<div class="shop-mobile-header">
+  <button id="mobileSidebarToggle" class="mobile-menu-btn" type="button" aria-label="Toggle Menu">
+    <i data-lucide="menu"></i>
+  </button>
+
+  <strong><%= shopName || 'My Shop' %></strong>
+
+  <button class="mobile-theme-btn" id="mobileThemeToggle" type="button" aria-label="Toggle Theme">
+    <i data-lucide="moon" id="mobileThemeIcon"></i>
+  </button>
+</div>
+
+<!-- Overlay for Mobile View -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Required Scripts -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/js/shop-sidebar.js"></script>

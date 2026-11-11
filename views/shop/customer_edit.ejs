@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Customer - <%= shopName %> | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/customer-edit.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div>
+                <h2>SHOPFLOW</h2>
+                <span>Business Suite</span>
+            </div>
+        </div>
+
+        <div class="shop-profile">
+            <div class="shop-avatar"><i class="fa-solid fa-store"></i></div>
+            <div class="shop-info">
+                <strong><%= shopName %></strong>
+                <span>Shop Owner</span>
+            </div>
+            <span class="online-dot"></span>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <a href="/shop/analytics" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+            </a>
+            <a href="/shop/billing" class="nav-link">
+                <i class="fa-solid fa-receipt"></i><span>Billing</span>
+            </a>
+            <a href="/shop/products" class="nav-link">
+                <i class="fa-solid fa-box"></i><span>Products</span>
+            </a>
+            <a href="/shop/customers" class="nav-link active">
+                <i class="fa-solid fa-users"></i><span>Customers</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="help-card">
+                <div class="help-icon"><i class="fa-solid fa-headset"></i></div>
+                <strong>Need help?</strong>
+                <p>We're here to support your business.</p>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <div class="breadcrumb">Customers <span>/</span> Edit Customer</div>
+                    <h1>Customer Management</h1>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="date-display">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+                <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
+            </div>
+        </header>
+
+        <section class="page-content">
+
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow"><span></span> CUSTOMER PROFILE</div>
+                    <h2>Edit Customer</h2>
+                    <p>Update your customer's information and contact details.</p>
+                </div>
+
+                <a href="/shop/customers" class="back-button">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Customers
+                </a>
+            </div>
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                    <button class="alert-close"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            <% } %>
+
+            <div class="edit-layout">
+
+                <section class="form-card">
+                    <div class="card-heading">
+                        <div class="heading-icon"><i class="fa-solid fa-user-pen"></i></div>
+                        <div>
+                            <h3>Customer Information</h3>
+                            <p>Make changes to the details below.</p>
+                        </div>
+                    </div>
+
+                    <form action="/shop/customers/<%= customer.cust_id %>/edit" method="POST" id="customerForm">
+
+                        <div class="form-section-label">BASIC DETAILS</div>
+
+                        <div class="form-group">
+                            <label for="customerName">Customer Name <span>*</span></label>
+                            <div class="input-wrap">
+                                <i class="fa-regular fa-user"></i>
+                                <input type="text" id="customerName" name="cust_name"
+                                    value="<%= customer.cust_name %>"
+                                    placeholder="Enter customer name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customerMobile">Mobile Number <span>*</span></label>
+                            <div class="input-wrap">
+                                <i class="fa-solid fa-phone"></i>
+                                <input type="text" id="customerMobile" name="mobile"
+                                    value="<%= customer.mobile %>"
+                                    placeholder="Enter 10-digit mobile number"
+                                    maxlength="10" required>
+                            </div>
+                            <small class="field-hint">Enter a valid 10-digit mobile number.</small>
+                        </div>
+
+                        <div class="form-section-label contact-label">CONTACT INFORMATION</div>
+
+                        <div class="form-group">
+                            <label for="customerEmail">Email Address</label>
+                            <div class="input-wrap">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" id="customerEmail" name="email"
+                                    value="<%= customer.email || '' %>"
+                                    placeholder="customer@example.com">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customerAddress">Address</label>
+                            <div class="input-wrap textarea-wrap">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <textarea id="customerAddress" name="address"
+                                    rows="3" placeholder="Enter customer address"><%= customer.address || '' %></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="/shop/customers" class="cancel-button">Cancel</a>
+                            <button type="submit" class="submit-button" id="submitButton">
+                                <i class="fa-solid fa-check"></i>
+                                Update Customer
+                            </button>
+                        </div>
+
+                    </form>
+                </section>
+
+                <aside class="preview-card">
+                    <div class="preview-top">
+                        <span class="preview-label">LIVE PREVIEW</span>
+                        <span class="preview-status"><span></span> Existing Customer</span>
+                    </div>
+
+                    <div class="preview-profile">
+                        <div class="preview-avatar" id="previewInitial">
+                            <%= (customer.cust_name || 'C').charAt(0).toUpperCase() %>
+                        </div>
+                        <h3 id="previewName"><%= customer.cust_name %></h3>
+                        <p>Customer Profile</p>
+                    </div>
+
+                    <div class="preview-divider"></div>
+
+                    <div class="preview-details">
+                        <div class="preview-detail">
+                            <div class="detail-icon"><i class="fa-solid fa-phone"></i></div>
+                            <div>
+                                <span>Mobile Number</span>
+                                <strong id="previewMobile"><%= customer.mobile %></strong>
+                            </div>
+                        </div>
+
+                        <div class="preview-detail">
+                            <div class="detail-icon"><i class="fa-regular fa-envelope"></i></div>
+                            <div>
+                                <span>Email Address</span>
+                                <strong id="previewEmail"><%= customer.email || 'Not provided' %></strong>
+                            </div>
+                        </div>
+
+                        <div class="preview-detail">
+                            <div class="detail-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <span>Address</span>
+                                <strong id="previewAddress"><%= customer.address || 'Not provided' %></strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preview-note">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <p>Changes will be reflected in this preview before you save the customer profile.</p>
+                    </div>
+                </aside>
+
+            </div>
+        </section>
+
+        <footer class="footer">
+            <span>© <%= new Date().getFullYear() %> SHOPFLOW. All rights reserved.</span>
+            <span>Built for smarter business <i class="fa-solid fa-heart"></i></span>
+        </footer>
+
+    </main>
+</div>
+
+<script src="/js/customer-edit.js"></script>
+</body>
+</html>

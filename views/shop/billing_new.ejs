@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Bill - <%= shopName %></title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/billing-new.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/shop/billing" class="back-btn">
+                <span>←</span> Back to Billing
+            </a>
+
+            <div class="topbar-divider"></div>
+
+            <div>
+                <p class="topbar-eyebrow">SHOP WORKSPACE</p>
+                <h1><%= shopName %></h1>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <div class="live-indicator">
+                <span></span> Billing System Active
+            </div>
+            <div class="user-avatar">
+                <%= shopName.charAt(0).toUpperCase() %>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <section class="page-heading">
+            <div>
+                <div class="breadcrumb">Billing <span>/</span> New Invoice</div>
+                <h2>Create New <span>Digital Bill</span></h2>
+                <p>Create an invoice, update customer details and manage your payment.</p>
+            </div>
+
+            <div class="invoice-label">
+                <div class="invoice-icon">▤</div>
+                <div>
+                    <strong>New Invoice</strong>
+                    <small>Ready to create</small>
+                </div>
+            </div>
+        </section>
+
+        <% if (error) { %>
+            <div class="alert alert-error">
+                <span>!</span>
+                <div><%= error %></div>
+            </div>
+        <% } %>
+
+        <form action="/shop/billing/create" method="POST" id="billForm">
+
+            <div class="billing-layout">
+
+                <!-- LEFT WORKSPACE -->
+                <div class="form-column">
+
+                    <!-- CUSTOMER -->
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <div class="heading-icon customer-icon">♙</div>
+                            <div>
+                                <h3>Customer Information</h3>
+                                <p>Who are you creating this bill for?</p>
+                            </div>
+                            <span class="step-label">STEP 01</span>
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div class="field-group">
+                                <label for="existingCust">Select Existing Customer <span class="optional">OPTIONAL</span></label>
+
+                                <div class="select-wrap">
+                                    <select name="cust_id" id="existingCust">
+                                        <option value="">Choose a saved customer or enter new details</option>
+
+                                        <% customers.forEach(c => { %>
+                                            <option
+                                                value="<%= c.cust_id %>"
+                                                data-name="<%= c.cust_name %>"
+                                                data-mobile="<%= c.mobile %>">
+                                                <%= c.cust_name %> — <%= c.mobile %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <span class="select-arrow">⌄</span>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="field-group">
+                                    <label for="custName">Customer Name <span class="required">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="cust_name"
+                                        id="custName"
+                                        required
+                                        placeholder="Enter customer name"
+                                        autocomplete="name">
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="custMobile">Mobile Number <span class="required">*</span></label>
+                                    <input
+                                        type="tel"
+                                        name="mobile"
+                                        id="custMobile"
+                                        required
+                                        placeholder="10-digit mobile number"
+                                        maxlength="10"
+                                        inputmode="numeric"
+                                        autocomplete="tel">
+                                </div>
+                            </div>
+
+                            <div class="customer-note">
+                                <span>ⓘ</span>
+                                Customer details will be saved with this bill and can be used for WhatsApp billing.
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- PRODUCTS -->
+                    <section class="panel products-panel">
+                        <div class="panel-heading">
+                            <div class="heading-icon product-icon">▦</div>
+                            <div>
+                                <h3>Products & Items</h3>
+                                <p>Add products and set their quantities.</p>
+                            </div>
+                            <span class="step-label">STEP 02</span>
+                        </div>
+
+                        <div class="product-table-head">
+                            <span>PRODUCT DETAILS</span>
+                            <span>QUANTITY</span>
+                            <span>REMOVE</span>
+                        </div>
+
+                        <div id="itemsContainer">
+                            <div class="item-row">
+                                <div class="product-field">
+                                    <div class="field-group">
+                                        <label>Choose Product</label>
+                                        <div class="select-wrap">
+                                            <select name="items[0][product_id]" required class="product-select">
+                                                <option value="">Select a product</option>
+
+                                                <% products.forEach(p => { %>
+                                                    <option
+                                                        value="<%= p.product_id %>"
+                                                        data-price="<%= p.product_sell_price %>"
+                                                        data-stock="<%= p.product_stock %>">
+                                                        <%= p.product_name %> (<%= p.product_size || '-' %>, <%= p.product_color || '-' %>) — ₹<%= p.product_sell_price %> [Stock: <%= p.product_stock %>]
+                                                    </option>
+                                                <% }) %>
+                                            </select>
+                                            <span class="select-arrow">⌄</span>
+                                        </div>
+                                        <div class="product-meta">Select an item to see its price and stock.</div>
+                                    </div>
+                                </div>
+
+                                <div class="quantity-field">
+                                    <label>Qty</label>
+                                    <div class="quantity-control">
+                                        <button type="button" class="qty-btn qty-minus" aria-label="Decrease quantity">−</button>
+                                        <input
+                                            type="number"
+                                            name="items[0][quantity]"
+                                            value="1"
+                                            min="1"
+                                            required
+                                            class="qty-input">
+                                        <button type="button" class="qty-btn qty-plus" aria-label="Increase quantity">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="remove-field">
+                                    <label>Action</label>
+                                    <button type="button" class="remove-row" aria-label="Remove product" disabled>×</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" id="addRowBtn" class="add-product-btn">
+                            <span>＋</span> Add Another Product
+                        </button>
+
+                        <div class="stock-note">
+                            <span>▣</span>
+                            Product stock is displayed in the selection list. Please verify availability before billing.
+                        </div>
+                    </section>
+
+                    <!-- PAYMENT -->
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <div class="heading-icon payment-icon">₹</div>
+                            <div>
+                                <h3>Payment & Discount</h3>
+                                <p>Set the discount and payment status.</p>
+                            </div>
+                            <span class="step-label">STEP 03</span>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="form-grid">
+                                <div class="field-group">
+                                    <label for="discount">Discount Amount</label>
+                                    <div class="input-with-prefix">
+                                        <span>₹</span>
+                                        <input type="number" name="discount" id="discount" value="0" min="0" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <small class="field-hint">Discount will be deducted from subtotal.</small>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="paymentStatus">Payment Status</label>
+                                    <div class="select-wrap">
+                                        <select name="payment_status" id="paymentStatus">
+                                            <option value="PAID">✓ PAID</option>
+                                            <option value="UNPAID">◷ UNPAID</option>
+                                            <option value="PARTIAL">◐ PARTIAL</option>
+                                        </select>
+                                        <span class="select-arrow">⌄</span>
+                                    </div>
+                                    <small class="field-hint">You can update payment status later.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- RIGHT SUMMARY -->
+                <aside class="summary-column">
+
+                    <section class="summary-card">
+                        <div class="summary-header">
+                            <div>
+                                <span class="summary-eyebrow">BILL OVERVIEW</span>
+                                <h3>Order Summary</h3>
+                            </div>
+                            <div class="summary-bag">▤</div>
+                        </div>
+
+                        <div class="summary-items" id="summaryItems">
+                            <div class="summary-empty">
+                                <span>▤</span>
+                                <p>Your selected products will appear here.</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-line">
+                            <span>Total Items</span>
+                            <strong id="totalItems">0</strong>
+                        </div>
+
+                        <div class="summary-line">
+                            <span>Subtotal</span>
+                            <strong id="subtotal">₹0.00</strong>
+                        </div>
+
+                        <div class="summary-line discount-line">
+                            <span>Discount</span>
+                            <strong id="discountTotal">− ₹0.00</strong>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="grand-total">
+                            <div>
+                                <span>Grand Total</span>
+                                <small>Final payable amount</small>
+                            </div>
+                            <strong id="grandTotal">₹0.00</strong>
+                        </div>
+
+                        <div class="summary-payment">
+                            <span class="payment-dot"></span>
+                            <span id="paymentPreview">Payment: PAID</span>
+                        </div>
+
+                        <button type="submit" class="generate-btn" id="generateBtn">
+                            <span>Generate Bill</span>
+                            <span class="generate-arrow">→</span>
+                        </button>
+
+                        <p class="secure-note">
+                            <span>✓</span> Your invoice will be securely saved.
+                        </p>
+                    </section>
+
+                    <div class="summary-tip">
+                        <div class="tip-icon">✦</div>
+                        <div>
+                            <strong>Quick Tip</strong>
+                            <p>Double-check customer details and product quantities before generating the invoice.</p>
+                        </div>
+                    </div>
+
+                </aside>
+
+            </div>
+        </form>
+
+        <footer class="page-footer">
+            <span>© <%= new Date().getFullYear() %> <%= shopName %></span>
+            <span>Digital Billing Workspace</span>
+        </footer>
+
+    </main>
+</div>
+
+<script src="/js/billing-new.js"></script>
+</body>
+</html>

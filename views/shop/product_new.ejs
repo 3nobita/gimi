@@ -1,0 +1,423 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - <%= shopName %> | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/product-new.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <span>SHOPFLOW</span>
+        </div>
+
+        <div class="shop-profile">
+            <div class="shop-avatar">
+                <i class="fa-solid fa-store"></i>
+            </div>
+            <div class="shop-profile-info">
+                <strong><%= shopName %></strong>
+                <span>Shop Workspace</span>
+            </div>
+            <i class="fa-solid fa-chevron-down profile-chevron"></i>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="/shop/analytics" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/shop/billing" class="nav-link">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Billing & Invoices</span>
+            </a>
+
+            <a href="/shop/products" class="nav-link active">
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </a>
+
+            <a href="/shop/customers" class="nav-link">
+                <i class="fa-solid fa-users"></i>
+                <span>Customers</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-help">
+                <div class="help-icon">
+                    <i class="fa-regular fa-circle-question"></i>
+                </div>
+                <div>
+                    <strong>Need assistance?</strong>
+                    <span>We're here to help.</span>
+                </div>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+
+            <div class="sidebar-version">SHOPFLOW BUSINESS SUITE · 1.0</div>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <span class="breadcrumb">Products / <strong>Add Product</strong></span>
+                    <h2>Product Management</h2>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="topbar-date">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-container">
+
+            <div class="page-heading">
+                <div>
+                    <div class="eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        INVENTORY MANAGEMENT
+                    </div>
+
+                    <h1>Add New Product</h1>
+                    <p>Create a product entry and keep your shop inventory organized.</p>
+                </div>
+
+                <a href="/shop/products" class="back-button">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Products
+                </a>
+            </div>
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <div class="form-layout">
+
+                <section class="form-card">
+
+                    <div class="form-card-header">
+                        <div class="header-icon">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+
+                        <div>
+                            <h3>Product Information</h3>
+                            <p>Enter the basic details of your product.</p>
+                        </div>
+                    </div>
+
+                    <form action="/shop/products/new" method="POST" id="productForm">
+
+                        <div class="form-section">
+                            <div class="section-heading">
+                                <span class="section-number">01</span>
+                                <div>
+                                    <h4>Basic Details</h4>
+                                    <p>Identify your product</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Product Name <span>*</span></label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-tag"></i>
+                                    <input
+                                        type="text"
+                                        name="product_name"
+                                        required
+                                        maxlength="150"
+                                        placeholder="e.g. Men's Casual Shirt"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-layer-group"></i>
+                                        <input
+                                            type="text"
+                                            name="product_category"
+                                            placeholder="e.g. Shirts / Jeans"
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Size</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-ruler"></i>
+                                        <input
+                                            type="text"
+                                            name="product_size"
+                                            placeholder="e.g. M / L / XL / 32"
+                                        >
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Color</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-palette"></i>
+                                    <input
+                                        type="text"
+                                        name="product_color"
+                                        placeholder="e.g. Navy Blue"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <div class="form-section">
+
+                            <div class="section-heading">
+                                <span class="section-number">02</span>
+                                <div>
+                                    <h4>Inventory Details</h4>
+                                    <p>Set your initial stock quantity</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Initial Stock Quantity <span>*</span></label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-boxes-stacked"></i>
+                                    <input
+                                        type="number"
+                                        name="product_stock"
+                                        id="productStock"
+                                        required
+                                        min="0"
+                                        step="1"
+                                        value="10"
+                                    >
+                                    <span class="input-suffix">Units</span>
+                                </div>
+                                <small>Enter the number of units currently available.</small>
+                            </div>
+
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <div class="form-section">
+
+                            <div class="section-heading">
+                                <span class="section-number">03</span>
+                                <div>
+                                    <h4>Pricing Details</h4>
+                                    <p>Define your purchase and selling price</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+                                    <label>Purchase / Actual Price <span>*</span></label>
+                                    <div class="input-wrapper">
+                                        <span class="currency-symbol">₹</span>
+                                        <input
+                                            type="number"
+                                            name="product_actual_price"
+                                            id="actualPrice"
+                                            required
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="500"
+                                        >
+                                    </div>
+                                    <small>Your product purchase cost.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Selling Price <span>*</span></label>
+                                    <div class="input-wrapper">
+                                        <span class="currency-symbol">₹</span>
+                                        <input
+                                            type="number"
+                                            name="product_sell_price"
+                                            id="sellingPrice"
+                                            required
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="999"
+                                        >
+                                    </div>
+                                    <small>Price charged to customers.</small>
+                                </div>
+
+                            </div>
+
+                            <div class="profit-preview" id="profitPreview">
+
+                                <div class="profit-icon">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+
+                                <div class="profit-info">
+                                    <span>Estimated Profit Per Unit</span>
+                                    <strong id="profitAmount">₹0.00</strong>
+                                </div>
+
+                                <div class="profit-margin">
+                                    <span>Profit Margin</span>
+                                    <strong id="profitMargin">0%</strong>
+                                </div>
+
+                            </div>
+
+                            <div class="pricing-warning" id="pricingWarning" hidden>
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                Selling price is lower than purchase price.
+                            </div>
+
+                        </div>
+
+                        <div class="form-footer">
+
+                            <a href="/shop/products" class="cancel-button">
+                                Cancel
+                            </a>
+
+                            <button type="submit" class="submit-button" id="submitButton">
+                                <i class="fa-solid fa-check"></i>
+                                Save Product
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <aside class="right-panel">
+
+                    <div class="preview-card">
+
+                        <div class="preview-top">
+                            <span>PRODUCT PREVIEW</span>
+                            <i class="fa-regular fa-eye"></i>
+                        </div>
+
+                        <div class="preview-product-icon">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+
+                        <h3 id="previewName">Your Product Name</h3>
+                        <p id="previewCategory">Product Category</p>
+
+                        <div class="preview-details">
+                            <div>
+                                <span>Size</span>
+                                <strong id="previewSize">—</strong>
+                            </div>
+
+                            <div>
+                                <span>Color</span>
+                                <strong id="previewColor">—</strong>
+                            </div>
+
+                            <div>
+                                <span>Stock</span>
+                                <strong id="previewStock">10 Units</strong>
+                            </div>
+                        </div>
+
+                        <div class="preview-price">
+                            <span>Selling Price</span>
+                            <strong id="previewPrice">₹0.00</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+
+                        <h4>Smart Inventory Tip</h4>
+
+                        <p>
+                            Keep your purchase price accurate. It helps you understand
+                            your product-level profitability and make better pricing decisions.
+                        </p>
+                    </div>
+
+                    <div class="secure-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Your product information is securely managed.
+                    </div>
+
+                </aside>
+
+            </div>
+
+            <footer class="page-footer">
+                <span>© <%= new Date().getFullYear() %> SHOPFLOW</span>
+                <span>Built for smarter business management.</span>
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="/js/product-new.js"></script>
+
+</body>
+</html>

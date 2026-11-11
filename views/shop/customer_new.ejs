@@ -1,0 +1,442 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Customer - <%= shopName %> | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/customer-new.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <span>SHOPFLOW</span>
+        </div>
+
+        <div class="shop-profile">
+            <div class="shop-avatar">
+                <i class="fa-solid fa-store"></i>
+            </div>
+
+            <div class="shop-profile-info">
+                <strong><%= shopName %></strong>
+                <span>Shop Workspace</span>
+            </div>
+
+            <i class="fa-solid fa-chevron-down profile-chevron"></i>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="/shop/analytics" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/shop/billing" class="nav-link">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Billing & Invoices</span>
+            </a>
+
+            <a href="/shop/products" class="nav-link">
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </a>
+
+            <a href="/shop/customers" class="nav-link active">
+                <i class="fa-solid fa-users"></i>
+                <span>Customers</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-help">
+                <div class="help-icon">
+                    <i class="fa-regular fa-circle-question"></i>
+                </div>
+
+                <div>
+                    <strong>Need assistance?</strong>
+                    <span>We're here to help.</span>
+                </div>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+
+            <div class="sidebar-version">
+                SHOPFLOW BUSINESS SUITE · 1.0
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <span class="breadcrumb">
+                        Customers / <strong>Add Customer</strong>
+                    </span>
+
+                    <h2>Customer Management</h2>
+                </div>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="topbar-date">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="page-container">
+
+            <!-- PAGE HEADING -->
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        CUSTOMER RELATIONSHIP MANAGEMENT
+                    </div>
+
+                    <h1>Add New Customer</h1>
+
+                    <p>
+                        Create a customer profile and build stronger customer relationships.
+                    </p>
+                </div>
+
+                <a href="/shop/customers" class="back-button">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Customers
+                </a>
+
+            </div>
+
+            <!-- ERROR -->
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <div class="form-layout">
+
+                <!-- FORM -->
+
+                <section class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div class="header-icon">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+
+                        <div>
+                            <h3>Customer Information</h3>
+                            <p>Enter the customer's basic contact details.</p>
+                        </div>
+
+                    </div>
+
+                    <form action="/shop/customers/new" method="POST" id="customerForm">
+
+                        <!-- PERSONAL DETAILS -->
+
+                        <div class="form-section">
+
+                            <div class="section-heading">
+
+                                <span class="section-number">01</span>
+
+                                <div>
+                                    <h4>Personal Details</h4>
+                                    <p>Who is your customer?</p>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label>Customer Name <span>*</span></label>
+
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user"></i>
+
+                                    <input
+                                        type="text"
+                                        name="cust_name"
+                                        id="customerName"
+                                        required
+                                        maxlength="150"
+                                        placeholder="Enter customer name"
+                                    >
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label>
+                                    Mobile Number <span>*</span>
+                                    <small class="unique-label">UNIQUE</small>
+                                </label>
+
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-phone"></i>
+
+                                    <span class="country-code">+91</span>
+
+                                    <input
+                                        type="tel"
+                                        name="mobile"
+                                        id="customerMobile"
+                                        required
+                                        maxlength="10"
+                                        minlength="10"
+                                        inputmode="numeric"
+                                        pattern="[6-9][0-9]{9}"
+                                        placeholder="10-digit mobile number"
+                                    >
+                                </div>
+
+                                <small class="field-hint">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    Mobile number must be unique for each customer.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-divider"></div>
+
+                        <!-- CONTACT DETAILS -->
+
+                        <div class="form-section">
+
+                            <div class="section-heading">
+
+                                <span class="section-number">02</span>
+
+                                <div>
+                                    <h4>Additional Information</h4>
+                                    <p>Optional contact information</p>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label>
+                                    Email Address
+                                    <small class="optional-label">OPTIONAL</small>
+                                </label>
+
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-envelope"></i>
+
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        id="customerEmail"
+                                        maxlength="150"
+                                        placeholder="customer@email.com"
+                                    >
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label>
+                                    Residential Address
+                                    <small class="optional-label">OPTIONAL</small>
+                                </label>
+
+                                <div class="input-wrapper textarea-wrapper">
+                                    <i class="fa-solid fa-location-dot"></i>
+
+                                    <textarea
+                                        name="address"
+                                        id="customerAddress"
+                                        rows="3"
+                                        maxlength="500"
+                                        placeholder="Enter customer address"
+                                    ></textarea>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- FOOTER -->
+
+                        <div class="form-footer">
+
+                            <a href="/shop/customers" class="cancel-button">
+                                Cancel
+                            </a>
+
+                            <button type="submit" class="submit-button" id="submitButton">
+                                <i class="fa-solid fa-user-plus"></i>
+                                Save Customer
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <!-- RIGHT PANEL -->
+
+                <aside class="right-panel">
+
+                    <div class="preview-card">
+
+                        <div class="preview-top">
+                            <span>CUSTOMER PREVIEW</span>
+                            <i class="fa-regular fa-eye"></i>
+                        </div>
+
+                        <div class="preview-avatar" id="previewAvatar">
+                            <span id="previewInitial">?</span>
+                        </div>
+
+                        <h3 id="previewName">Customer Name</h3>
+
+                        <span class="customer-badge">
+                            <i class="fa-solid fa-circle-check"></i>
+                            New Customer
+                        </span>
+
+                        <div class="preview-details">
+
+                            <div class="preview-detail">
+                                <div class="detail-icon">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+
+                                <div>
+                                    <span>Mobile Number</span>
+                                    <strong id="previewMobile">Not provided</strong>
+                                </div>
+                            </div>
+
+                            <div class="preview-detail">
+                                <div class="detail-icon">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+
+                                <div>
+                                    <span>Email Address</span>
+                                    <strong id="previewEmail">Not provided</strong>
+                                </div>
+                            </div>
+
+                            <div class="preview-detail">
+                                <div class="detail-icon">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+
+                                <div>
+                                    <span>Address</span>
+                                    <strong id="previewAddress">Not provided</strong>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="preview-footer">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            Customer information preview
+                        </div>
+
+                    </div>
+
+                    <div class="info-card">
+
+                        <div class="info-icon">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+
+                        <h4>Customer Management Tip</h4>
+
+                        <p>
+                            Maintain accurate mobile numbers to identify customers
+                            quickly, access their purchase history and provide
+                            a better shopping experience.
+                        </p>
+
+                    </div>
+
+                    <div class="secure-note">
+                        <i class="fa-solid fa-lock"></i>
+                        Customer details are handled securely.
+                    </div>
+
+                </aside>
+
+            </div>
+
+            <footer class="page-footer">
+                <span>© <%= new Date().getFullYear() %> SHOPFLOW</span>
+                <span>Built for smarter business management.</span>
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="/js/customer-new.js"></script>
+
+</body>
+</html>

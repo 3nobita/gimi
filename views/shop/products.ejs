@@ -1,0 +1,401 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - <%= shopName %> | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/products.css">
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <span>SHOPFLOW</span>
+        </div>
+
+        <div class="shop-profile">
+            <div class="shop-avatar"><i class="fa-solid fa-store"></i></div>
+            <div class="shop-info">
+                <strong><%= shopName %></strong>
+                <span>Shop Workspace</span>
+            </div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <a href="/shop/analytics" class="nav-link">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/shop/billing" class="nav-link">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Billing</span>
+            </a>
+
+            <a href="/shop/products" class="nav-link active">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>Products</span>
+                <span class="nav-indicator"></span>
+            </a>
+
+            <a href="/shop/customers" class="nav-link">
+                <i class="fa-solid fa-users"></i>
+                <span>Customers</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-help">
+                <div class="help-icon"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                    <strong>Need Help?</strong>
+                    <span>We're here for you</span>
+                </div>
+            </div>
+
+            <a href="/shop/logout" class="logout-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <div class="breadcrumb">Workspace <i class="fa-solid fa-chevron-right"></i> Products</div>
+                    <h2>Product Inventory</h2>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="date-display">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate"></span>
+                </div>
+
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-container">
+
+            <!-- Page Heading -->
+            <section class="page-heading">
+                <div>
+                    <span class="eyebrow">INVENTORY MANAGEMENT</span>
+                    <h1>Manage Your Products</h1>
+                    <p>Track your products, monitor stock and manage pricing in one place.</p>
+                </div>
+
+                <a href="/shop/products/new" class="primary-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    Add New Product
+                </a>
+            </section>
+
+            <!-- Alerts -->
+            <% if (success) { %>
+                <div class="alert alert-success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><%= success %></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+            <% } %>
+
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><%= error %></span>
+                    <button class="alert-close">&times;</button>
+                </div>
+            <% } %>
+
+            <!-- Stats -->
+            <section class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span>Total Products</span>
+                        <h3 class="stock-count"><%= products.length %></h3>
+                        <small>Products in inventory</small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span>Active Products</span>
+                        <h3 class="active-count"><%= products.filter(p => p.product_status === 'ACTIVE').length %></h3>
+                        <small>Currently available</small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span>Low Stock</span>
+                        <h3 class="low-stock-count"><%= products.filter(p => Number(p.product_stock) <= 5).length %></h3>
+                        <small>5 or fewer units</small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span>Total Stock Units</span>
+                        <h3><%= products.reduce((sum, p) => sum + Number(p.product_stock || 0), 0) %></h3>
+                        <small>Units available</small>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-card">
+                <div class="filter-heading">
+                    <div>
+                        <h3><i class="fa-solid fa-sliders"></i> Find Products</h3>
+                        <p>Search and filter your inventory</p>
+                    </div>
+                </div>
+
+                <form action="/shop/products" method="GET" class="filter-form">
+
+                    <div class="filter-input search-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            name="search"
+                            id="tableSearch"
+                            value="<%= query.search || '' %>"
+                            placeholder="Search product name, category, size..."
+                        >
+                    </div>
+
+                    <div class="filter-input">
+                        <i class="fa-solid fa-tags"></i>
+                        <select name="category">
+                            <option value="">All Categories</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.product_category %>" <%= query.category === cat.product_category ? 'selected' : '' %>>
+                                    <%= cat.product_category %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="filter-input">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                        <select name="status">
+                            <option value="">All Status</option>
+                            <option value="ACTIVE" <%= query.status === 'ACTIVE' ? 'selected' : '' %>>Active</option>
+                            <option value="INACTIVE" <%= query.status === 'INACTIVE' ? 'selected' : '' %>>Inactive</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="filter-btn">
+                        <i class="fa-solid fa-filter"></i> Apply
+                    </button>
+
+                    <a href="/shop/products" class="reset-btn">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </a>
+
+                </form>
+            </section>
+
+            <!-- Product Table -->
+            <section class="table-card">
+
+                <div class="table-header">
+                    <div>
+                        <h3>All Products</h3>
+                        <p>Your complete product inventory</p>
+                    </div>
+
+                    <div class="table-count">
+                        <span><%= products.length %></span> Products
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="product-table">
+
+                        <thead>
+                            <tr>
+                                <th>PRODUCT</th>
+                                <th>CATEGORY</th>
+                                <th>VARIANT</th>
+                                <th>PURCHASE PRICE</th>
+                                <th>SELL PRICE</th>
+                                <th>STOCK</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% if (products.length === 0) { %>
+                                <tr>
+                                    <td colspan="8">
+                                        <div class="empty-state">
+                                            <div class="empty-icon">
+                                                <i class="fa-solid fa-box-open"></i>
+                                            </div>
+                                            <h3>No Products Found</h3>
+                                            <p>Try changing your filters or add a new product.</p>
+                                            <a href="/shop/products/new" class="primary-btn">
+                                                <i class="fa-solid fa-plus"></i> Add Product
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } else { %>
+
+                                <% products.forEach(prod => { %>
+
+                                    <tr
+                                        class="product-row"
+                                        data-name="<%= prod.product_name %>"
+                                        data-category="<%= prod.product_category || '' %>"
+                                        data-stock="<%= prod.product_stock %>"
+                                        data-status="<%= prod.product_status %>"
+                                    >
+
+                                        <td>
+                                            <div class="product-name-cell">
+                                                <div class="product-icon">
+                                                    <i class="fa-solid fa-box"></i>
+                                                </div>
+                                                <div>
+                                                    <strong><%= prod.product_name %></strong>
+                                                    <small>ID: #<%= prod.product_id %></small>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="category-badge">
+                                                <%= prod.product_category || 'Uncategorized' %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="variant-info">
+                                                <span><%= prod.product_color || '-' %></span>
+                                                <small>Size: <%= prod.product_size || '-' %></small>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="price-muted">₹<%= prod.product_actual_price %></span>
+                                        </td>
+
+                                        <td>
+                                            <strong class="selling-price">₹<%= prod.product_sell_price %></strong>
+                                        </td>
+
+                                        <td>
+                                            <span class="stock-badge <%= Number(prod.product_stock) <= 5 ? 'stock-low' : 'stock-good' %>">
+                                                <%= prod.product_stock %>
+                                                <% if (Number(prod.product_stock) <= 5) { %>
+                                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <% } %>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <form action="/shop/products/<%= prod.product_id %>/status" method="POST" class="status-form">
+                                                <select
+                                                    name="product_status"
+                                                    class="status-select <%= prod.product_status === 'ACTIVE' ? 'status-active' : 'status-inactive' %>"
+                                                    onchange="this.form.submit()"
+                                                >
+                                                    <option value="ACTIVE" <%= prod.product_status === 'ACTIVE' ? 'selected' : '' %>>ACTIVE</option>
+                                                    <option value="INACTIVE" <%= prod.product_status === 'INACTIVE' ? 'selected' : '' %>>INACTIVE</option>
+                                                </select>
+                                            </form>
+                                        </td>
+
+                                        <td>
+                                            <a href="/shop/products/<%= prod.product_id %>/edit" class="edit-btn">
+                                                <i class="fa-solid fa-pen"></i>
+                                                Edit
+                                            </a>
+                                        </td>
+
+                                    </tr>
+
+                                <% }) %>
+
+                            <% } %>
+
+                            <tr id="noSearchResults" style="display:none;">
+                                <td colspan="8">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        <h3>No Matching Products</h3>
+                                        <p>Try another product name.</p>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <span>Showing <strong><%= products.length %></strong> products</span>
+                    <span><i class="fa-solid fa-shield-halved"></i> Inventory data is up to date</span>
+                </div>
+
+            </section>
+
+            <footer class="page-footer">
+                <span>© <%= new Date().getFullYear() %> SHOPFLOW. All rights reserved.</span>
+                <span>Built for smarter business management.</span>
+            </footer>
+
+        </div>
+    </main>
+
+</div>
+
+<script src="/js/products.js"></script>
+</body>
+</html>

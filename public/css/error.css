@@ -1,0 +1,356 @@
+
+:root {
+    --primary: #8068ef;
+    --primary-dark: #654bd9;
+    --navy: #17172e;
+    --text: #28283e;
+    --muted: #9292a6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+}
+
+.error-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at 50% 10%, #30265f 0%, transparent 48%),
+        linear-gradient(145deg, #17172e, #211c43 65%, #30265e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 35px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.error-container {
+    width: 100%;
+    max-width: 550px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Background */
+
+.bg-circle {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.circle-one {
+    width: 500px;
+    height: 500px;
+    top: -240px;
+    right: -150px;
+}
+
+.circle-two {
+    width: 650px;
+    height: 650px;
+    bottom: -400px;
+    left: -200px;
+}
+
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    opacity: .13;
+    pointer-events: none;
+    background-image: radial-gradient(#c3b8ff 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* Brand */
+
+.brand-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 27px;
+    text-decoration: none;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+.brand-icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #a28dff, #7056e8);
+    box-shadow: 0 7px 20px rgba(112,86,232,.35);
+}
+
+/* Card */
+
+.error-card {
+    background: #fff;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 22px;
+    padding: 42px 38px 30px;
+    text-align: center;
+    box-shadow: 0 25px 80px rgba(0,0,0,.22);
+    animation: cardEntry .55s ease both;
+}
+
+@keyframes cardEntry {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Visual */
+
+.error-visual {
+    width: 125px;
+    height: 125px;
+    position: relative;
+    margin: 0 auto 25px;
+    display: grid;
+    place-items: center;
+}
+
+.error-icon {
+    width: 82px;
+    height: 82px;
+    display: grid;
+    place-items: center;
+    border-radius: 25px;
+    background: linear-gradient(145deg, #f0edff, #e5e0ff);
+    color: var(--primary);
+    font-size: 33px;
+    position: relative;
+    z-index: 2;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+.visual-ring {
+    position: absolute;
+    border: 1px solid #e8e3ff;
+    border-radius: 50%;
+}
+
+.ring-one {
+    inset: 0;
+}
+
+.ring-two {
+    inset: 12px;
+    border-style: dashed;
+    animation: rotateRing 25s linear infinite;
+}
+
+@keyframes rotateRing {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Text */
+
+.error-code {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #9999ac;
+}
+
+.error-code span {
+    color: var(--primary);
+    margin-left: 4px;
+}
+
+.error-card h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 29px;
+    color: var(--text);
+    margin: 11px 0;
+    letter-spacing: -.6px;
+}
+
+.error-message {
+    max-width: 390px;
+    margin: 0 auto;
+    color: #85859a;
+    font-size: 12px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.error-divider {
+    height: 1px;
+    background: #eeeef3;
+    margin: 27px 0;
+}
+
+/* Actions */
+
+.error-actions {
+    display: flex;
+    gap: 11px;
+}
+
+.retry-btn,
+.home-btn {
+    min-height: 47px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+    text-decoration: none;
+}
+
+.retry-btn {
+    border: 1px solid #e8e8ef;
+    background: #f5f5f9;
+    color: #55556c;
+}
+
+.retry-btn:hover {
+    background: #ebebf3;
+    transform: translateY(-2px);
+}
+
+.home-btn {
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+}
+
+.home-btn:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(112,86,232,.2);
+}
+
+.retry-btn:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+/* Support */
+
+.support-note {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 25px;
+    color: #a0a0b0;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.support-note i {
+    color: var(--primary);
+    margin-top: 2px;
+}
+
+/* Footer */
+
+.error-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #a5a2bf;
+    font-size: 10px;
+    padding: 22px 3px 0;
+}
+
+/* Offline */
+
+.offline-banner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px 15px;
+    text-align: center;
+    background: #d94352;
+    color: white;
+    z-index: 100;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(0,0,0,.2);
+}
+
+.offline-banner.show {
+    display: block;
+}
+
+/* Responsive */
+
+@media (max-width: 520px) {
+    .error-page {
+        padding: 25px 15px;
+    }
+
+    .error-card {
+        padding: 32px 20px 25px;
+        border-radius: 17px;
+    }
+
+    .error-card h1 {
+        font-size: 24px;
+    }
+
+    .error-message {
+        font-size: 11px;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .error-footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 7px;
+    }
+
+    .error-visual {
+        transform: scale(.9);
+        margin-bottom: 17px;
+    }
+}

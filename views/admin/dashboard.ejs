@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Command Center | SHOPFLOW</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="adminSidebar">
+
+        <div class="sidebar-brand">
+            <div class="brand-mark">
+                <i class="fa-solid fa-cube"></i>
+            </div>
+
+            <div>
+                <h2>SHOPFLOW<span>.</span></h2>
+                <small>ADMINISTRATION</small>
+            </div>
+        </div>
+
+        <div class="sidebar-caption">CONTROL CENTER</div>
+
+        <nav class="sidebar-navigation">
+
+            <a href="/admin" class="sidebar-link active">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Overview</span>
+                <i class="fa-solid fa-angle-right active-arrow"></i>
+            </a>
+
+            <a href="/admin/shops" class="sidebar-link">
+                <i class="fa-solid fa-store"></i>
+                <span>Shop Management</span>
+            </a>
+
+            <a href="/admin/subscriptions" class="sidebar-link">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span>Subscriptions</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-caption secondary-caption">SYSTEM</div>
+
+        <div class="system-card">
+            <div class="system-indicator">
+                <span></span>
+                ADMIN ACCESS
+            </div>
+
+            <p>Platform management and business operations.</p>
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+                <div class="profile-avatar">
+                    <%= adminName.charAt(0).toUpperCase() %>
+                </div>
+
+                <div class="profile-details">
+                    <strong><%= adminName %></strong>
+                    <span>Platform Administrator</span>
+                </div>
+
+                <i class="fa-solid fa-circle-check verified-icon"></i>
+            </div>
+
+            <a href="/admin/logout" class="sidebar-logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Sign Out</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN WORKSPACE -->
+    <main class="admin-main">
+
+        <!-- TOP HEADER -->
+        <header class="workspace-header">
+
+            <div class="header-left">
+
+                <button class="mobile-menu" id="menuToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div>
+                    <div class="header-breadcrumb">
+                        <span>SHOPFLOW HQ</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <span>Overview</span>
+                    </div>
+
+                    <h1>Command Center</h1>
+                </div>
+
+            </div>
+
+            <div class="header-right">
+
+                <div class="system-status">
+                    <span class="status-light"></span>
+                    Platform Management
+                </div>
+
+                <div class="header-divider"></div>
+
+                <div class="header-admin">
+                    <div class="header-avatar">
+                        <%= adminName.charAt(0).toUpperCase() %>
+                    </div>
+
+                    <div>
+                        <strong><%= adminName %></strong>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <section class="dashboard-content">
+
+            <!-- INTRO -->
+            <div class="welcome-section">
+
+                <div class="welcome-copy">
+                    <div class="eyebrow">
+                        <span></span>
+                        PLATFORM OVERVIEW
+                    </div>
+
+                    <h2>
+                        Welcome back,
+                        <span><%= adminName %>.</span>
+                    </h2>
+
+                    <p>
+                        Here's what's happening across your SHOPFLOW platform.
+                        Manage your shops and keep business operations under control.
+                    </p>
+                </div>
+
+                <div class="date-widget">
+                    <div class="date-icon">
+                        <i class="fa-regular fa-calendar"></i>
+                    </div>
+
+                    <div>
+                        <span>TODAY</span>
+                        <strong id="currentDate">Loading...</strong>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- SECTION TITLE -->
+            <div class="section-title">
+
+                <div>
+                    <span class="section-overline">BUSINESS INTELLIGENCE</span>
+                    <h3>Platform Statistics</h3>
+                </div>
+
+                <div class="live-tag">
+                    <span></span>
+                    CURRENT OVERVIEW
+                </div>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+            <div class="stats-grid">
+
+                <!-- TOTAL SHOPS -->
+                <article class="stat-card stat-shops">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+
+                        <span class="stat-index">01 / SHOPS</span>
+                    </div>
+
+                    <div class="stat-info">
+                        <span>Total Registered Shops</span>
+
+                        <h3>
+                            <%= stats.totalShops %>
+                        </h3>
+
+                        <p>Businesses registered on platform</p>
+                    </div>
+
+                    <a href="/admin/shops" class="stat-footer">
+                        Explore shops
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                </article>
+
+
+                <!-- ACTIVE SHOPS -->
+                <article class="stat-card stat-active">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+
+                        <span class="stat-index">02 / ACTIVE</span>
+                    </div>
+
+                    <div class="stat-info">
+                        <span>Active Shops</span>
+
+                        <h3>
+                            <%= stats.activeShops %>
+                        </h3>
+
+                        <p>Currently active businesses</p>
+                    </div>
+
+                    <a href="/admin/shops" class="stat-footer">
+                        View businesses
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                </article>
+
+
+                <!-- EXPIRED -->
+                <article class="stat-card stat-expired">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-calendar-xmark"></i>
+                        </div>
+
+                        <span class="stat-index">03 / EXPIRED</span>
+                    </div>
+
+                    <div class="stat-info">
+                        <span>Expired Subscriptions</span>
+
+                        <h3>
+                            <%= stats.expiredSubs %>
+                        </h3>
+
+                        <p>Subscriptions requiring attention</p>
+                    </div>
+
+                    <a href="/admin/subscriptions" class="stat-footer">
+                        Manage subscriptions
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                </article>
+
+
+                <!-- PENDING PAYMENTS -->
+                <article class="stat-card stat-pending">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+
+                        <span class="stat-index">04 / PENDING</span>
+                    </div>
+
+                    <div class="stat-info">
+                        <span>Pending Payments</span>
+
+                        <h3>
+                            <%= stats.pendingPayments %>
+                        </h3>
+
+                        <p>Payments awaiting confirmation</p>
+                    </div>
+
+                    <a href="/admin/subscriptions" class="stat-footer">
+                        Review payments
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                </article>
+
+
+                <!-- REVENUE -->
+                <article class="stat-card stat-revenue">
+
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                        </div>
+
+                        <span class="stat-index">05 / REVENUE</span>
+                    </div>
+
+                    <div class="stat-info">
+                        <span>Total Revenue</span>
+
+                        <h3 class="revenue-value">
+                            ₹<%= stats.totalRevenue %>
+                        </h3>
+
+                        <p>Total recorded platform revenue</p>
+                    </div>
+
+                    <a href="/admin/subscriptions" class="stat-footer">
+                        View subscriptions
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                </article>
+
+            </div>
+
+
+            <!-- LOWER SECTION -->
+            <div class="operations-grid">
+
+                <!-- OPERATIONS -->
+                <section class="operations-panel">
+
+                    <div class="panel-heading">
+                        <div>
+                            <span class="section-overline">MANAGEMENT</span>
+                            <h3>Platform Operations</h3>
+                        </div>
+
+                        <i class="fa-solid fa-arrow-up-right-dots panel-heading-icon"></i>
+                    </div>
+
+                    <div class="operation-list">
+
+                        <a href="/admin/shops" class="operation-item">
+
+                            <div class="operation-icon shop-operation">
+                                <i class="fa-solid fa-shop"></i>
+                            </div>
+
+                            <div class="operation-copy">
+                                <strong>Shop Management</strong>
+                                <span>Register and manage platform shops</span>
+                            </div>
+
+                            <i class="fa-solid fa-arrow-right operation-arrow"></i>
+
+                        </a>
+
+
+                        <a href="/admin/subscriptions" class="operation-item">
+
+                            <div class="operation-icon subscription-operation">
+                                <i class="fa-solid fa-file-invoice"></i>
+                            </div>
+
+                            <div class="operation-copy">
+                                <strong>Subscription Management</strong>
+                                <span>Review subscriptions and payment records</span>
+                            </div>
+
+                            <i class="fa-solid fa-arrow-right operation-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ADMIN IDENTITY -->
+                <section class="identity-panel">
+
+                    <div class="identity-top">
+                        <span>ADMINISTRATOR</span>
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <div class="identity-avatar">
+                        <%= adminName.charAt(0).toUpperCase() %>
+                    </div>
+
+                    <h3><%= adminName %></h3>
+
+                    <p>Platform Administrator</p>
+
+                    <div class="identity-divider"></div>
+
+                    <div class="identity-security">
+                        <i class="fa-solid fa-lock"></i>
+
+                        <div>
+                            <strong>Administrative Access</strong>
+                            <span>Manage your platform from one place.</span>
+                        </div>
+                    </div>
+
+                    <a href="/admin/logout" class="identity-logout">
+                        <i class="fa-solid fa-power-off"></i>
+                        Sign Out
+                    </a>
+
+                </section>
+
+            </div>
+
+
+            <!-- FOOTER -->
+            <footer class="dashboard-footer">
+
+                <div>
+                    <strong>SHOPFLOW <span>HQ</span></strong>
+                    <small>Platform Administration Console</small>
+                </div>
+
+                <span>© <span id="currentYear"></span> SHOPFLOW. All rights reserved.</span>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="/js/admin-dashboard.js"></script>
+
+</body>
+</html>
