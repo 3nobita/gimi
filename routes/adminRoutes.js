@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
-const logger = require('../utils/logger');
+// const logger = require('../utils/logger');
 
 // Middleware to check if admin is logged in
 const isAdminLoggedIn = (req, res, next) => {
@@ -342,7 +342,7 @@ router.post("/shops/:shop_id/reset-password", isAdminLoggedIn, async (req, res) 
     });
 
     if (result.rows.length === 0) {
-      logger.warn(
+      console.log(
         `PASSWORD RESET FAILED | ADMIN ID: ${req.session?.adminId || 'N/A'} | SHOP ID: ${shopId} | REASON: Shop or owner credentials not found`
       );
 
@@ -373,7 +373,7 @@ router.post("/shops/:shop_id/reset-password", isAdminLoggedIn, async (req, res) 
     const whatsappLink = `https://wa.me/${cleanPhone}?text=${whatsappMessage}`;
 
     // LOG SUCCESS
-    logger.info(
+    console.info(
       `PASSWORD RESET LINK GENERATED | ADMIN ID: ${req.session?.adminId || 'N/A'} | SHOP ID: ${shopId} | SHOP NAME: ${owner.shop_name} | OWNER LOGIN ID: ${owner.login_id} | EXPIRY: ${expiryTime}`
     );
 
@@ -381,7 +381,7 @@ router.post("/shops/:shop_id/reset-password", isAdminLoggedIn, async (req, res) 
 
   } catch (err) {
 
-    logger.error(
+    console.error(
       `PASSWORD RESET GENERATION ERROR | ADMIN ID: ${req.session?.adminId || 'N/A'} | SHOP ID: ${shopId} | ERROR: ${err.message}`
     );
 
