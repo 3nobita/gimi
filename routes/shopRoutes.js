@@ -8,26 +8,13 @@ const crypto = require("crypto");
 // Middleware to check if shop owner is logged in
 const isShopLoggedIn = (req, res, next) => {
   if (req.session && req.session.shopOwnerId) {
-
-    console.log(
-      `SHOP AUTHENTICATED | SHOP ID: ${req.session.shopId || 'N/A'} | LOGIN ID: ${req.session.loginId || 'N/A'} | OWNER ID: ${req.session.shopOwnerId} | METHOD: ${req.method} | URL: ${req.originalUrl}`
-    );
-
     return next();
   }
-
-  console.log(
-    `UNAUTHORIZED SHOP ACCESS | SHOP ID: ${req.session?.shopId || 'N/A'} | LOGIN ID: ${req.session?.loginId || 'N/A'} | METHOD: ${req.method} | URL: ${req.originalUrl} | REASON: Missing or invalid session`
-  );
-
   res.redirect("/shop/login");
 };
 
 // 1. Shop Owner Login Get
 router.get("/login", (req, res) => {
-  console.log(
-    `SHOP LOGIN PAGE OPENED | SHOP ID: ${req.session?.shopId || 'N/A'} | LOGIN ID: ${req.session?.loginId || 'N/A'} | IP: ${req.ip} | REFERER: ${req.get('referer') || 'DIRECT ACCESS'}`
-  );
   res.render("shop/login", { error: null });
 });
 
@@ -49,8 +36,6 @@ router.post("/login", async (req, res) => {
     }
 
     const owner = result.rows[0];
-    console.log(`SHOP OWNER FOUND | User ID: ${owner.user_id} | Login ID: ${owner.login_id} | Shop ID: ${owner.shop_id}`);
-
     // Check if shop is ACTIVE
     if (owner.shop_status && owner.shop_status !== 'ACTIVE') {
       return res.render("shop/login", { error: "Your shop is currently INACTIVE or CLOSED by the administrator. Please contact support." });
@@ -66,13 +51,8 @@ router.post("/login", async (req, res) => {
     req.session.shopId = owner.shop_id;
     req.session.shopName = owner.shop_name;
     req.session.loginId = owner.login_id;
-    console.log(`SHOP LOGIN SUCCESS | Login ID: ${owner.login_id} | Shop ID: ${owner.shop_id}`);
     res.redirect("/shop/analytics");
   } catch (err) {
-    console.error(
-      `SHOP LOGIN ERROR | SHOP ID: ${req.session?.shopId || 'N/A'} | LOGIN ID: ${req.session?.loginId || 'N/A'} | IP: ${req.ip} | METHOD: ${req.method} | URL: ${req.originalUrl} | ERROR: ${err.message}`
-    );
-
     res.render("shop/login", {
       error: "Something went wrong: " + err.message
     });
@@ -1051,9 +1031,6 @@ router.get("/analytics", isShopLoggedIn, async (req, res) => {
         start = formatDate(from);
       }
     }
-    console.log(
-      `ANALYTICS PAGE REQUESTED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | FILTER: ${filter} | START DATE: ${start} | END DATE: ${end}`
-    );
     if (!start || !end) {
       throw new Error("Please select valid date range");
     }
@@ -1244,9 +1221,6 @@ router.get("/analytics", isShopLoggedIn, async (req, res) => {
       args: [shopId, start, end, limit, offset]
     });
     // ANALYTICS DATA LOG
-    console.log(
-      `ANALYTICS DATA LOADED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | DATE RANGE: ${start} TO ${end} | OVERVIEW: ${JSON.stringify(overview)} | PROFIT: ${JSON.stringify({ ...profit, net_profit: netProfit })} | CUSTOMERS: ${JSON.stringify(customerRes.rows[0])} | NEW CUSTOMERS: ${newCustomerRes.rows[0].new_customers} | INVENTORY: ${JSON.stringify(inventoryRes.rows[0])} | CHART RECORDS: ${chartRes.rows.length} | TOP CUSTOMERS: ${topCustomersRes.rows.length} | BEST SELLERS: ${bestSellersRes.rows.length} | TOTAL TRANSACTIONS: ${totalRecords} | CURRENT PAGE: ${page} | TRANSACTIONS: ${JSON.stringify(transactionsRes.rows)}`
-    );
     res.render("shop/analytics", {
       shopName: req.session.shopName,
       filter,
@@ -1269,9 +1243,6 @@ router.get("/analytics", isShopLoggedIn, async (req, res) => {
     });
 
   } catch (err) {
-    console.error(
-      `ANALYTICS LOAD FAILED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | FILTER: ${req.query.filter || 'month'} | START DATE: ${startDate || 'N/A'} | END DATE: ${endDate || 'N/A'} | ERROR: ${err.message}`
-    );
     res.status(500).send("Error loading analytics: " + err.message);
   }
 });
