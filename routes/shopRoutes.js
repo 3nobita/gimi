@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
-// const logger = require('../utils/logger');
-const crypto = require("crypto");
+const logger = require('../utils/logger');
 
 // Middleware to check if shop owner is logged in
 const isShopLoggedIn = (req, res, next) => {
@@ -21,10 +20,6 @@ router.get("/login", (req, res) => {
 // 2. Shop Owner Login Post
 router.post("/login", async (req, res) => {
   const { login_id, password } = req.body;
-
-  // Login attempt log
-  console.log(`SHOP LOGIN ATTEMPT | Login ID: ${login_id}`);
-
   try {
     const result = await db.execute({
       sql: `SELECT u.*, s.shop_name, s.shop_status FROM users_shop u JOIN shop_list s ON u.shop_id = s.shop_id WHERE u.login_id = ?`,
@@ -36,6 +31,7 @@ router.post("/login", async (req, res) => {
     }
 
     const owner = result.rows[0];
+    logger.info(owner.shop_status);
     // Check if shop is ACTIVE
     if (owner.shop_status && owner.shop_status !== 'ACTIVE') {
       return res.render("shop/login", { error: "Your shop is currently INACTIVE or CLOSED by the administrator. Please contact support." });
@@ -51,12 +47,11 @@ router.post("/login", async (req, res) => {
     req.session.shopId = owner.shop_id;
     req.session.shopName = owner.shop_name;
     req.session.loginId = owner.login_id;
+
     res.redirect("/shop/analytics");
   } catch (err) {
-    res.render("shop/login", {
-      error: "Something went wrong: " + err.message
-    });
-    }
+    res.render("shop/login", { error: "Something went wrong: " + err.message });
+  }
 });
 
 // 3. Shop Owner profile & Profile View
@@ -71,7 +66,7 @@ router.get("/profile", isShopLoggedIn, async (req, res) => {
       sql: `SELECT login_id FROM users_shop WHERE shop_id = ?`,
       args: [req.session.shopId],
     });
-    console.log(`PROFILE DATA LOADED | Shop Name: ${shopRes.rows[0]?.shop_name} | Login ID: ${userRes.rows[0]?.login_id} | Shop ID: ${req.session.shopId} | Shop Data: ${JSON.stringify(shopRes.rows[0])}`);
+
     res.render("shop/profile", {
       shopName: req.session.shopName,
       loginId: userRes.rows[0].login_id,
@@ -80,9 +75,6 @@ router.get("/profile", isShopLoggedIn, async (req, res) => {
       error: req.query.error || null,
     });
   } catch (err) {
-    console.error(
-  `SHOP PROFILE LOADING FAILED | SHOP ID: ${req.session?.shopId || 'N/A'} | LOGIN ID: ${req.session?.loginId || 'N/A'} | URL: ${req.originalUrl} | ERROR: ${err.message}`
-);
     res.status(500).send("Error loading profile: " + err.message);
   }
 });
@@ -119,45 +111,18 @@ router.post("/profile/update", isShopLoggedIn, async (req, res) => {
     // Update session shop name if changed
     req.session.shopName = shop_name;
 
-    // Activity Log
-    console.log(`SHOP PROFILE UPDATED | ${JSON.stringify({
-      shop_name,
-      shop_no,
-      area,
-      shop_address,
-      google_link,
-      contact_person,
-      contact_number,
-      email
-    })}`);    
-
     res.redirect("/shop/profile?success=Profile updated successfully!");
   } catch (err) {
-    console.error(
-  `SHOP PROFILE UPDATE FAILED | SHOP ID: ${req.session?.shopId || 'N/A'} | LOGIN ID: ${req.session?.loginId || 'N/A'} | URL: ${req.originalUrl} | SUBMITTED DATA: ${JSON.stringify(req.body)} | ERROR: ${err.message}`
-);
     res.redirect("/shop/profile?error=Failed to update profile: " + err.message);
   }
 });
 
 // 5. Logout
 router.get("/logout", (req, res) => {
-  const shopId = req.session.shopId;
-  const loginId = req.session.loginId;
-
-  console.log(`SHOP LOGOUT | Shop ID: ${shopId} | Login ID: ${loginId}`);
-
-  req.session.destroy((err) => {
-    if (err) {
-      console.error(`LOGOUT FAILED | ${err.message}`);
-      return res.redirect("/shop/profile");
-    }
-
+  req.session.destroy(() => {
     res.redirect("/shop/login");
   });
 });
-
-// forget password hold for now ------------------------------------------
 
 // 1. Forgot Password Form Get
 router.get("/forgot-password", (req, res) => {
@@ -165,15 +130,9 @@ router.get("/forgot-password", (req, res) => {
 });
 
 // 2. Handle Forgot Password Request & Generate WhatsApp Link
-
 router.post("/forgot-password", async (req, res) => {
   const { login_id } = req.body;
-
   try {
-    console.log(
-      `FORGOT PASSWORD REQUESTED | LOGIN ID: ${login_id || 'N/A'} | IP: ${req.ip}`
-    );
-
     // Find user and their shop's contact number
     const result = await db.execute({
       sql: `SELECT u.user_id, s.contact_number, s.shop_name FROM users_shop u JOIN shop_list s ON u.shop_id = s.shop_id WHERE u.login_id = ?`,
@@ -181,21 +140,15 @@ router.post("/forgot-password", async (req, res) => {
     });
 
     if (result.rows.length === 0) {
-      console.log(
-        `FORGOT PASSWORD FAILED | LOGIN ID: ${login_id || 'N/A'} | REASON: Login ID not found`
-      );
-
-      return res.render("shop/forgot_password", {
-        error: "Login ID not found in system.",
-        success: null
-      });
+      return res.render("shop/forgot_password", { error: "Login ID not found in system.", success: null });
     }
 
     const owner = result.rows[0];
-
-    // Generate secure token & expiry (15 mins)
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const expiryTime = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    
+    // Generate a simple unique random token & expiry (e.g. valid for 15 mins)
+    // const resetToken = Math.random().toString(36.substring(2)) + Date.now().toString(36);
+    const resetToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const expiryTime = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 mins from now
 
     // Save token to database
     await db.execute({
@@ -204,111 +157,48 @@ router.post("/forgot-password", async (req, res) => {
     });
 
     // Create Reset URL
-    const protocol = req.protocol;
-    const host = req.get('host');
+
+    // Ye automatically detect kar lega ki request localhost se aa rahi hai ya Vercel live domain se
+    const protocol = req.protocol; // http ya https
+    const host = req.get('host');   // localhost:3000 ya tere-app-ka-naam.vercel.app
 
     const resetUrl = `${protocol}://${host}/shop/reset-password/${resetToken}`;
+    // const resetUrl = `http://localhost:3000/shop/reset-password/${resetToken}`;
 
     // Format WhatsApp Message
     const whatsappMessage = encodeURIComponent(
-      `Hello *${owner.shop_name}*,\n\nYour password reset link is:\n${resetUrl}\n`
+      `Hello *${owner.shop_name}*,\n\nYour password reset link is:\n${resetUrl}\n\n(This link is valid for 15 minutes). If you did not request this, please ignore.`
     );
-
-    // Clean phone number
+    
+    // Clean phone number (remove spaces/symbols if any)
     const phone = owner.contact_number.replace(/\D/g, "");
     const whatsappLink = `https://wa.me/${phone}?text=${whatsappMessage}`;
-
-    console.log(
-      `FORGOT PASSWORD RESET LINK GENERATED | SHOP NAME: ${owner.shop_name} | OWNER ID: ${owner.user_id} | LOGIN ID: ${login_id} | EXPIRY: ${expiryTime}`
-    );
 
     res.render("shop/forgot_password", {
       error: null,
       success: `Reset link generated successfully for ${owner.shop_name}!`,
       whatsappLink: whatsappLink,
     });
-
   } catch (err) {
-
-    console.error(
-      `FORGOT PASSWORD ERROR | LOGIN ID: ${login_id || 'N/A'} | IP: ${req.ip} | ERROR: ${err.message}`
-    );
-
-    res.render("shop/forgot_password", {
-      error: "Something went wrong: " + err.message,
-      success: null
-    });
+    res.render("shop/forgot_password", { error: "Something went wrong: " + err.message, success: null });
   }
 });
 
 // 3. Reset Password Form Get (Verify Token)
-
 router.get("/reset-password/:token", async (req, res) => {
   const { token } = req.params;
-
-  console.log(
-    `PASSWORD RESET PAGE OPENED | SHOP ID: ${req.session?.shopId || 'N/A'} | LOGIN ID: ${req.session?.loginId || 'N/A'} | IP: ${req.ip} | URL: ${req.originalUrl}`
-  );
-
   try {
     const result = await db.execute({
-      sql: `
-        SELECT *
-        FROM users_shop
-        WHERE reset_token = ?
-        AND julianday(reset_token_expiry) > julianday('now')
-      `,
+      sql: `SELECT * FROM users_shop WHERE reset_token = ? AND reset_token_expiry > CURRENT_TIMESTAMP`,
       args: [token],
     });
 
     if (result.rows.length === 0) {
-      // Debug: Check whether token exists but expiry failed
-      const debugResult = await db.execute({
-        sql: `
-          SELECT
-            user_id,
-            shop_id,
-            login_id,
-            reset_token_expiry,
-            julianday(reset_token_expiry) AS expiry_jd,
-            julianday('now') AS current_jd
-          FROM users_shop
-          WHERE reset_token = ?
-        `,
-        args: [token],
-      });
-
-      if (debugResult.rows.length > 0) {
-        const data = debugResult.rows[0];
-
-        console.log(
-          `RESET TOKEN EXPIRED | SHOP ID: ${data.shop_id} | LOGIN ID: ${data.login_id} | EXPIRY: ${data.reset_token_expiry}`
-        );
-      } else {
-        console.log(
-          `RESET TOKEN NOT FOUND | IP: ${req.ip} | URL: ${req.originalUrl}`
-        );
-      }
-
       return res.send("Password reset link is invalid or has expired.");
     }
 
-    const owner = result.rows[0];
-
-    console.log(
-      `PASSWORD RESET TOKEN VERIFIED | SHOP ID: ${owner.shop_id} | LOGIN ID: ${owner.login_id} | USER ID: ${owner.user_id}`
-    );
-
-    res.render("shop/reset_password", {
-      token,
-      error: null
-    });
-
+    res.render("shop/reset_password", { token, error: null });
   } catch (err) {
-    console.error(
-      `PASSWORD RESET TOKEN VERIFICATION FAILED | IP: ${req.ip} | ERROR: ${err.message}`
-    );
-
     res.status(500).send("Error verifying token: " + err.message);
   }
 });
@@ -342,8 +232,6 @@ router.post("/reset-password/:token", async (req, res) => {
     res.status(500).send("Error resetting password: " + err.message);
   }
 });
-
-// forget password hold for now ------------------------------------------
 
 
 // --- PRODUCT MANAGEMENT ROUTES ---
@@ -382,14 +270,6 @@ router.get("/products", isShopLoggedIn, async (req, res) => {
       args: [shopId],
     });
 
-    // LOG LOADED PRODUCT DATA
-    console.log(`PRODUCTS PAGE LOADED | ${JSON.stringify({
-      filters: { search, category, status },
-      totalProducts: productsRes.rows.length,
-      products: productsRes.rows,
-      categories: categoriesRes.rows
-    })}`);
-
     res.render("shop/products", {
       shopName: req.session.shopName,
       products: productsRes.rows,
@@ -399,16 +279,12 @@ router.get("/products", isShopLoggedIn, async (req, res) => {
       error: req.query.error || null,
     });
   } catch (err) {
-    console.error(`PRODUCTS FETCH FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | ERROR: ${err.message}`);    
     res.status(500).send("Error fetching products: " + err.message);
   }
 });
 
 // 2. Render Add Product Form
 router.get("/products/new", isShopLoggedIn, (req, res) => {
-  console.log(
-    `NEW PRODUCT FORM LOADED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId}`
-  );
   res.render("shop/product_new", {
     shopName: req.session.shopName,
     error: null,
@@ -441,13 +317,9 @@ router.post("/products/new", isShopLoggedIn, async (req, res) => {
         product_stock || 0,
       ],
     });
-    console.log(`PRODUCT CREATED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT DATA: ${JSON.stringify(req.body)}`);
 
     res.redirect("/shop/products?success=Product added successfully!");
   } catch (err) {
-
-    console.error(`PRODUCT CREATION FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT DATA: ${JSON.stringify(req.body)} | ERROR: ${err.message}`);    
-
     res.render("shop/product_new", {
       shopName: req.session.shopName,
       error: "Failed to add product: " + err.message,
@@ -465,15 +337,8 @@ router.get("/products/:id/edit", isShopLoggedIn, async (req, res) => {
     });
 
     if (productRes.rows.length === 0) {
-
-      console.log(
-        `PRODUCT NOT FOUND | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT ID: ${productId}`
-      );
-
       return res.redirect("/shop/products?error=Product not found");
     }
-
-    console.log(`PRODUCT EDIT PAGE LOADED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT DATA: ${JSON.stringify(productRes.rows[0])}`);    
 
     res.render("shop/product_edit", {
       shopName: req.session.shopName,
@@ -481,7 +346,6 @@ router.get("/products/:id/edit", isShopLoggedIn, async (req, res) => {
       error: null,
     });
   } catch (err) {
-    console.error(`PRODUCT EDIT PAGE FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT ID: ${productId} | ERROR: ${err.message}`);    
     res.status(500).send("Error loading edit page: " + err.message);
   }
 });
@@ -516,11 +380,9 @@ router.post("/products/:id/edit", isShopLoggedIn, async (req, res) => {
         req.session.shopId,
       ],
     });
-    console.log(`PRODUCT UPDATED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT ID: ${productId} | UPDATED DATA: ${JSON.stringify(req.body)}`);
 
     res.redirect("/shop/products?success=Product updated successfully!");
   } catch (err) {
-    console.error(`PRODUCT UPDATE FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT ID: ${productId} | SUBMITTED DATA: ${JSON.stringify(req.body)} | ERROR: ${err.message}`);    
     res.redirect(`/shop/products/${productId}/edit?error=Failed to update product: ` + err.message);
   }
 });
@@ -531,22 +393,12 @@ router.post("/products/:id/status", isShopLoggedIn, async (req, res) => {
   const { product_status } = req.body;
 
   try {
-    const oldStatusRes = await db.execute({
-      sql: `SELECT product_status FROM product_master WHERE product_id = ? AND shop_id = ?`,
-      args: [productId, req.session.shopId],
-    });
-
     await db.execute({
       sql: `UPDATE product_master SET product_status = ?, updated_at = CURRENT_TIMESTAMP WHERE product_id = ? AND shop_id = ?`,
       args: [product_status, productId, req.session.shopId],
     });
-
-    console.log(`PRODUCT STATUS UPDATED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT ID: ${productId} | OLD STATUS: ${oldStatusRes.rows[0]?.product_status || 'N/A'} | NEW STATUS: ${product_status}`);
-
     res.redirect("/shop/products?success=Product status updated!");
-
   } catch (err) {
-    console.error(`PRODUCT STATUS UPDATE FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | PRODUCT ID: ${productId} | NEW STATUS: ${product_status} | ERROR: ${err.message}`);
     res.redirect("/shop/products?error=Failed to update status: " + err.message);
   }
 });
@@ -579,10 +431,6 @@ router.get("/customers", isShopLoggedIn, async (req, res) => {
     query += ` GROUP BY c.cust_id ORDER BY c.cust_id DESC`;
 
     const customersRes = await db.execute({ sql: query, args: params });
-    // LOG CUSTOMER DATA
-    console.log(
-      `CUSTOMERS PAGE LOADED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | SEARCH: ${search || 'NONE'} | TOTAL CUSTOMERS: ${customersRes.rows.length} | CUSTOMER DATA: ${JSON.stringify(customersRes.rows)}`
-    );
 
     res.render("shop/customers", {
       shopName: req.session.shopName,
@@ -592,16 +440,12 @@ router.get("/customers", isShopLoggedIn, async (req, res) => {
       error: req.query.error || null,
     });
   } catch (err) {
-    console.error(`CUSTOMERS FETCH FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | SEARCH: ${search || 'NONE'} | ERROR: ${err.message}`);
     res.status(500).send("Error fetching customers: " + err.message);
   }
 });
 
 // 2. Render Add Customer Form
 router.get("/customers/new", isShopLoggedIn, (req, res) => {
-  console.log(
-    `NEW CUSTOMER FORM LOADED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId}`
-  );
   res.render("shop/customer_new", {
     shopName: req.session.shopName,
     error: null,
@@ -619,15 +463,8 @@ router.post("/customers/new", isShopLoggedIn, async (req, res) => {
       args: [shopId, cust_name, mobile, email || null, address || null],
     });
 
-    console.log(
-      `CUSTOMER CREATED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER DATA: ${JSON.stringify(req.body)}`
-    );    
-
     res.redirect("/shop/customers?success=Customer added successfully!");
   } catch (err) {
-    console.error(
-      `CUSTOMER CREATION FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER DATA: ${JSON.stringify(req.body)} | ERROR: ${err.message}`
-    );    
     res.render("shop/customer_new", {
       shopName: req.session.shopName,
       error: "Failed to add customer (Mobile number already exists in this shop): " + err.message,
@@ -645,26 +482,15 @@ router.get("/customers/:id/edit", isShopLoggedIn, async (req, res) => {
     });
 
     if (custRes.rows.length === 0) {
-
-      console.log(
-        `CUSTOMER NOT FOUND | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER ID: ${custId}`
-      );
-
       return res.redirect("/shop/customers?error=Customer not found");
     }
 
-    console.log(
-      `CUSTOMER EDIT PAGE LOADED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER DATA: ${JSON.stringify(custRes.rows[0])}`
-    );
     res.render("shop/customer_edit", {
       shopName: req.session.shopName,
       customer: custRes.rows[0],
       error: null,
     });
   } catch (err) {
-    console.error(
-      `CUSTOMER EDIT PAGE FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER ID: ${custId} | ERROR: ${err.message}`
-    );    
     res.status(500).send("Error loading edit page: " + err.message);
   }
 });
@@ -679,14 +505,9 @@ router.post("/customers/:id/edit", isShopLoggedIn, async (req, res) => {
       sql: `UPDATE customer_master SET cust_name = ?, mobile = ?, email = ?, address = ? WHERE cust_id = ? AND shop_id = ?`,
       args: [cust_name, mobile, email || null, address || null, custId, req.session.shopId],
     });
-    console.log(
-      `CUSTOMER UPDATED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER ID: ${custId} | UPDATED DATA: ${JSON.stringify(req.body)}`
-    );
+
     res.redirect("/shop/customers?success=Customer updated successfully!");
   } catch (err) {
-    console.error(
-      `CUSTOMER UPDATE FAILED | SHOP ID: ${req.session.shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER ID: ${custId} | SUBMITTED DATA: ${JSON.stringify(req.body)} | ERROR: ${err.message}`
-    );
     res.redirect(`/shop/customers/${custId}/edit?error=Failed to update customer (Mobile might already exist): ` + err.message);
   }
 });
@@ -703,11 +524,6 @@ router.get("/customers/:id/history", isShopLoggedIn, async (req, res) => {
     });
 
     if (custRes.rows.length === 0) {
-
-      console.log(
-        `CUSTOMER HISTORY NOT FOUND | SHOP ID: ${shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER ID: ${custId}`
-      );
-
       return res.redirect("/shop/customers?error=Customer not found");
     }
 
@@ -721,19 +537,13 @@ router.get("/customers/:id/history", isShopLoggedIn, async (req, res) => {
       `,
       args: [custId, shopId],
     });
-    // LOG CUSTOMER PURCHASE HISTORY
-    console.log(
-      `CUSTOMER HISTORY LOADED | SHOP ID: ${shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER ID: ${custId} | CUSTOMER DATA: ${JSON.stringify(custRes.rows[0])} | TOTAL PURCHASES: ${flowsRes.rows.length} | PURCHASE HISTORY: ${JSON.stringify(flowsRes.rows)}`
-    );
+
     res.render("shop/customer_history", {
       shopName: req.session.shopName,
       customer: custRes.rows[0],
       purchases: flowsRes.rows,
     });
   } catch (err) {
-    console.error(
-      `CUSTOMER HISTORY FETCH FAILED | SHOP ID: ${shopId} | LOGIN ID: ${req.session.loginId} | CUSTOMER ID: ${custId} | ERROR: ${err.message}`
-    );    
     res.status(500).send("Error fetching purchase history: " + err.message);
   }
 });
@@ -762,10 +572,7 @@ router.get("/billing", isShopLoggedIn, async (req, res) => {
     query += ` ORDER BY b.bill_id DESC`;
 
     const billsRes = await db.execute({ sql: query, args: params });
-    // LOG LOADED BILLING DATA
-    console.log(
-      `BILLING PAGE LOADED | SHOP ID: ${shopId} | LOGIN ID: ${req.session.loginId} | SEARCH: ${search || 'NONE'} | TOTAL BILLS: ${billsRes.rows.length} | BILL DATA: ${JSON.stringify(billsRes.rows)}`
-    );
+
     res.render("shop/billing_list", {
       shopName: req.session.shopName,
       bills: billsRes.rows,
@@ -774,9 +581,6 @@ router.get("/billing", isShopLoggedIn, async (req, res) => {
       error: req.query.error || null,
     });
   } catch (err) {
-    console.error(
-      `BILLING FETCH FAILED | SHOP ID: ${shopId} | LOGIN ID: ${req.session.loginId} | SEARCH: ${search || 'NONE'} | ERROR: ${err.message}`
-    );
     res.status(500).send("Error fetching bills: " + err.message);
   }
 });
@@ -784,8 +588,6 @@ router.get("/billing", isShopLoggedIn, async (req, res) => {
 // 2. Render New Bill / POS Checkout Page
 router.get("/billing/new", isShopLoggedIn, async (req, res) => {
   const shopId = req.session.shopId;
-  const loginId = req.session.loginId;
-
   try {
     const customersRes = await db.execute({
       sql: `SELECT cust_id, cust_name, mobile FROM customer_master WHERE shop_id = ? ORDER BY cust_name ASC`,
@@ -796,10 +598,7 @@ router.get("/billing/new", isShopLoggedIn, async (req, res) => {
       sql: `SELECT product_id, product_name, product_size, product_color, product_sell_price, product_stock FROM product_master WHERE shop_id = ? AND product_status = 'ACTIVE' AND product_stock > 0`,
       args: [shopId],
     });
-    // LOG POS CHECKOUT DATA
-    console.log(
-      `NEW BILLING PAGE LOADED | SHOP ID: ${shopId} | LOGIN ID: ${req.session.loginId} | TOTAL CUSTOMERS: ${customersRes.rows.length} | CUSTOMERS: ${JSON.stringify(customersRes.rows)} | TOTAL PRODUCTS: ${productsRes.rows.length} | AVAILABLE PRODUCTS: ${JSON.stringify(productsRes.rows)}`
-    );
+
     res.render("shop/billing_new", {
       shopName: req.session.shopName,
       customers: customersRes.rows,
@@ -807,9 +606,6 @@ router.get("/billing/new", isShopLoggedIn, async (req, res) => {
       error: null,
     });
   } catch (err) {
-    console.error(
-      `POS CHECKOUT LOAD FAILED | SHOP ID: ${shopId} | LOGIN ID: ${req.session.loginId} | ERROR: ${err.message}`
-    );
     res.status(500).send("Error loading POS checkout: " + err.message);
   }
 });
@@ -817,18 +613,11 @@ router.get("/billing/new", isShopLoggedIn, async (req, res) => {
 // 3. Handle Create Bill (Atomic Transaction + Stock Deduction + Customer Flow)
 router.post("/billing/create", isShopLoggedIn, async (req, res) => {
   const shopId = req.session.shopId;
-  const loginId = req.session.loginId;
-
   const { cust_id, cust_name, mobile, discount, payment_status, items } = req.body; 
 
   if (!items || items.length === 0) {
-    console.log(
-      `BILLING CANCELLED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | REASON: No products selected`
-    );
-
     return res.redirect("/shop/billing/new?error=Please select at least one product.");
   }
-
 
   const tx = await db.transaction("write");
   try {
@@ -844,18 +633,12 @@ router.post("/billing/create", isShopLoggedIn, async (req, res) => {
 
       if (existingCust.rows.length > 0) {
         finalCustId = existingCust.rows[0].cust_id;
-        console.log(
-          `EXISTING CUSTOMER FOUND | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | CUSTOMER ID: ${finalCustId}`
-        );
       } else {
         const newCustRes = await tx.execute({
           sql: `INSERT INTO customer_master (shop_id, cust_name, mobile) VALUES (?, ?, ?)`,
           args: [shopId, cust_name, mobile],
         });
         finalCustId = newCustRes.lastInsertRowid;
-        console.log(
-          `NEW CUSTOMER CREATED DURING BILLING | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | CUSTOMER ID: ${finalCustId} | NAME: ${cust_name}`
-        );        
       }
     }
 
@@ -895,9 +678,7 @@ router.post("/billing/create", isShopLoggedIn, async (req, res) => {
       });
       console.log("Processed Items:", processedItems);
     }
-    console.log(
-      `BILLING ITEMS PROCESSED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | ITEMS: ${JSON.stringify(processedItems)}`
-    );
+
     const discountAmount = parseFloat(discount) || 0;
     const finalAmount = Math.max(0, totalAmount - discountAmount);
 
@@ -921,9 +702,7 @@ router.post("/billing/create", isShopLoggedIn, async (req, res) => {
         args: [pItem.quantity, pItem.product_id],
       });
     }
-    console.log(
-      `PRODUCT STOCK UPDATED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | BILL ID: ${billId} | ITEMS: ${JSON.stringify(processedItems.map(item => ({ product_id: item.product_id, quantity_sold: item.quantity })))}`
-    );
+
     // Update customer flow
     await tx.execute({
       sql: `INSERT INTO customer_flow (cust_id, shop_id, bill_id, spending, get_discount) VALUES (?, ?, ?, ?, ?)`,
@@ -931,15 +710,9 @@ router.post("/billing/create", isShopLoggedIn, async (req, res) => {
     });
 
     await tx.commit();
-    console.log(
-      `BILLING SUCCESS | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | BILL ID: ${billId} | CUSTOMER ID: ${finalCustId} | TOTAL: ${totalAmount} | DISCOUNT: ${discountAmount} | FINAL AMOUNT: ${finalAmount} | PAYMENT STATUS: ${payment_status || 'UNPAID'} | ITEMS: ${JSON.stringify(processedItems)}`
-    );    
     res.redirect(`/shop/billing/${billId}`);
   } catch (err) {
     await tx.rollback();
-    console.error(
-      `BILLING FAILED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | CUSTOMER ID: ${finalCustId || cust_id || 'N/A'} | CUSTOMER NAME: ${cust_name || 'N/A'} | ITEMS: ${JSON.stringify(items)} | ERROR: ${err.message}`
-    );    
     res.redirect(`/shop/billing/new?error=Billing failed: ${err.message}`);
   }
 });
@@ -948,7 +721,6 @@ router.post("/billing/create", isShopLoggedIn, async (req, res) => {
 router.get("/billing/:id", isShopLoggedIn, async (req, res) => {
   const billId = req.params.id;
   const shopId = req.session.shopId;
-  const loginId = req.session.loginId;
 
   try {
     const billRes = await db.execute({
@@ -961,10 +733,6 @@ router.get("/billing/:id", isShopLoggedIn, async (req, res) => {
     });
 
     if (billRes.rows.length === 0) {
-      console.log(
-        `INVOICE NOT FOUND | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | BILL ID: ${billId}`
-      );
-
       return res.redirect("/shop/billing?error=Bill not found");
     }
 
@@ -975,9 +743,7 @@ router.get("/billing/:id", isShopLoggedIn, async (req, res) => {
             WHERE i.bill_id = ?`,
       args: [billId],
     });
-    console.log(
-      `INVOICE LOADED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | BILL ID: ${billId} | CUSTOMER: ${billRes.rows[0].cust_name} | TOTAL AMOUNT: ${billRes.rows[0].total_amount} | FINAL AMOUNT: ${billRes.rows[0].final_amount} | PAYMENT STATUS: ${billRes.rows[0].payment_status} | TOTAL ITEMS: ${itemsRes.rows.length} | ITEMS: ${JSON.stringify(itemsRes.rows)}`
-    );
+
     res.render("shop/invoice", {
       shopName: req.session.shopName,
       bill: billRes.rows[0],
@@ -986,9 +752,6 @@ router.get("/billing/:id", isShopLoggedIn, async (req, res) => {
       error: req.query.error || null,
     });
   } catch (err) {
-    console.error(
-      `INVOICE LOAD FAILED | SHOP ID: ${shopId} | LOGIN ID: ${loginId} | BILL ID: ${billId} | ERROR: ${err.message}`
-    );    
     res.status(500).send("Error loading invoice: " + err.message);
   }
 });
@@ -996,7 +759,7 @@ router.get("/billing/:id", isShopLoggedIn, async (req, res) => {
 // --- SALES & ANALYTICS ROUTES ---
 router.get("/analytics", isShopLoggedIn, async (req, res) => {
   const shopId = req.session.shopId;
-  const loginId = req.session.loginId;
+
   try {
     const { filter = "month", startDate, endDate } = req.query;
 
@@ -1031,6 +794,7 @@ router.get("/analytics", isShopLoggedIn, async (req, res) => {
         start = formatDate(from);
       }
     }
+
     if (!start || !end) {
       throw new Error("Please select valid date range");
     }
@@ -1220,7 +984,7 @@ router.get("/analytics", isShopLoggedIn, async (req, res) => {
       `,
       args: [shopId, start, end, limit, offset]
     });
-    // ANALYTICS DATA LOG
+
     res.render("shop/analytics", {
       shopName: req.session.shopName,
       filter,
@@ -1243,6 +1007,7 @@ router.get("/analytics", isShopLoggedIn, async (req, res) => {
     });
 
   } catch (err) {
+    logger.error("Analytics Error: " + err.message);
     res.status(500).send("Error loading analytics: " + err.message);
   }
 });
