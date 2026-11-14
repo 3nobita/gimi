@@ -17,6 +17,14 @@ app.use(
     secret: process.env.SESSION_SECRET || "super-secret-key",
     resave: false,
     saveUninitialized: false,
+
+    cookie: {
+    maxAge: 60 * 60 * 1000, // 1 Hour
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax"
+  }
+
   })
 );
 

@@ -1,8 +1,8 @@
-console.log("ADMIN ROUTER LOADED");
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
+const logger = require('../utils/logger');
 
 // Middleware to check if admin is logged in
 const isAdminLoggedIn = (req, res, next) => {
@@ -342,6 +342,10 @@ router.post("/shops/:shop_id/reset-password", isAdminLoggedIn, async (req, res) 
     });
 
     if (result.rows.length === 0) {
+      logger.warn(
+        `PASSWORD RESET FAILED | ADMIN ID: ${req.session?.adminId || 'N/A'} | SHOP ID: ${shopId} | REASON: Shop or owner credentials not found`
+      );
+
       return res.redirect("/admin/shops?error=Shop or owner login credentials not found.");
     }
 
@@ -356,23 +360,31 @@ router.post("/shops/:shop_id/reset-password", isAdminLoggedIn, async (req, res) 
       sql: `UPDATE users_shop SET reset_token = ?, reset_token_expiry = ? WHERE user_id = ?`,
       args: [resetToken, expiryTime, owner.user_id],
     });
- 
     // 4. Create Reset URL & WhatsApp link
-    // Ye automatically detect kar lega ki request localhost se aa rahi hai ya Vercel live domain se
-    const protocol = req.protocol; // http ya https
-    const host = req.get('host');   // localhost:3000 ya tere-app-ka-naam.vercel.app
+    const protocol = req.protocol;
+    const host = req.get('host');
     const resetUrl = `${protocol}://${host}/shop/reset-password/${resetToken}`;
-    // const resetUrl = `http://localhost:3000/shop/reset-password/${resetToken}`;
+
     const whatsappMessage = encodeURIComponent(
-      `Hello *${owner.shop_name}* (Owner),\n\nAdmin has generated a password reset link for your account (Login ID: ${owner.login_id}).\n\nClick here to reset your password:\n${resetUrl}\n\n(This link is valid for 15 minutes).`
+      `Hello *${owner.shop_name}* (Owner),\n\nAdmin has generated a password reset link for your account (Login ID: ${owner.login_id}).\n\nClick here to reset your password:\n${resetUrl}\n`
     );
 
     const cleanPhone = owner.contact_number.replace(/\D/g, "");
     const whatsappLink = `https://wa.me/${cleanPhone}?text=${whatsappMessage}`;
 
-    // Redirect back to shops page with the WhatsApp share link popup or banner
+    // LOG SUCCESS
+    logger.info(
+      `PASSWORD RESET LINK GENERATED | ADMIN ID: ${req.session?.adminId || 'N/A'} | SHOP ID: ${shopId} | SHOP NAME: ${owner.shop_name} | OWNER LOGIN ID: ${owner.login_id} | EXPIRY: ${expiryTime}`
+    );
+
     res.redirect(`/admin/shops?success=Reset link generated! <a href="${whatsappLink}" target="_blank" class="underline font-bold text-green-700">Click here to send via WhatsApp to ${owner.shop_name}</a>`);
+
   } catch (err) {
+
+    logger.error(
+      `PASSWORD RESET GENERATION ERROR | ADMIN ID: ${req.session?.adminId || 'N/A'} | SHOP ID: ${shopId} | ERROR: ${err.message}`
+    );
+
     res.redirect("/admin/shops?error=Failed to generate reset link: " + err.message);
   }
 });

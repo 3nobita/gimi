@@ -32,7 +32,6 @@ const logMessage = (level, message) => {
         timeZone: 'Asia/Kolkata',
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
     }).format(now);
 
     const logFilePath = path.join(logsDir, `${dateStr}-app.log`);
