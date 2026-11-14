@@ -1,15 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 
-// Logs folder path
+const isVercel = Boolean(process.env.VERCEL) || process.env.NODE_ENV === 'production';
 const logsDir = path.join(__dirname, '../logs');
 
-// Ensure logs directory exists
-if (!fs.existsSync(logsDir)) {
+// Sirf local environment mein folder banao
+if (!isVercel && !fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
 }
 
-// Logger function
 const logMessage = (level, message) => {
     const now = new Date();
 
@@ -26,27 +25,35 @@ const logMessage = (level, message) => {
 
     const logEntry = `[${timestamp}] [${level.toUpperCase()}] ${message}\n`;
 
-    console.log(logEntry.trim());
+    // Vercel Logs ke liye stdout / stderr
+    if (level.toUpperCase() === 'ERROR') {
+        console.error(logEntry.trim());
+    } else {
+        console.log(logEntry.trim());
+    }
 
-    const dateStr = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Kolkata',
-        year: 'numeric',
-        month: '2-digit',
-    }).format(now);
+    // Sirf local PC par file mein likho
+    if (!isVercel) {
+        const dateStr = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: '2-digit',
+        }).format(now);
 
-    const logFilePath = path.join(logsDir, `${dateStr}-app.log`);
+        const logFilePath = path.join(logsDir, `${dateStr}-app.log`);
 
-    fs.appendFile(logFilePath, logEntry, (err) => {
-        if (err) {
-            console.error("Failed to write to log file:", err);
-        }
-    });
+        fs.appendFile(logFilePath, logEntry, (err) => {
+            if (err) {
+                console.error("Failed to write to log file:", err);
+            }
+        });
+    }
 };
+
 const logger = {
     info: (msg) => logMessage('INFO', msg),
     error: (msg) => logMessage('ERROR', msg),
     warn: (msg) => logMessage('WARN', msg),
 };
 
- conformal = logger;
 module.exports = logger;
