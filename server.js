@@ -2,7 +2,6 @@ const express = require("express");
 const session = require("express-session");
 const path = require("path");
 require("dotenv").config();
-const logger = require('./utils/logger');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -48,7 +47,6 @@ app.get("/", (req, res) => {
 
 // 1. 404 Not Found Handler
 app.use((req, res, next) => {
-    logger.warn(`404 Not Found: ${req.method} ${req.url}`);
     res.status(404).render("error", {
         errorCode: "404",
         errorTitle: "Page Not Found",
@@ -58,7 +56,6 @@ app.use((req, res, next) => {
 
 // 2. 500 Internal Server Error Handler
 app.use((err, req, res, next) => {
-    logger.error(`500 Error: ${err.message} - Stack: ${err.stack}`);
     res.status(500).render("error", {
         errorCode: "500",
         errorTitle: "Something Went Wrong",

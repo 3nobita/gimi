@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
-const logger = require('../utils/logger');
 
 // Middleware to check if shop owner is logged in
 const isShopLoggedIn = (req, res, next) => {
@@ -31,7 +30,6 @@ router.post("/login", async (req, res) => {
     }
 
     const owner = result.rows[0];
-    logger.info(owner.shop_status);
     // Check if shop is ACTIVE
     if (owner.shop_status && owner.shop_status !== 'ACTIVE') {
       return res.render("shop/login", { error: "Your shop is currently INACTIVE or CLOSED by the administrator. Please contact support." });
@@ -1007,7 +1005,6 @@ router.get("/analytics", isShopLoggedIn, async (req, res) => {
     });
 
   } catch (err) {
-    logger.error("Analytics Error: " + err.message);
     res.status(500).send("Error loading analytics: " + err.message);
   }
 });
